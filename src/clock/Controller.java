@@ -18,12 +18,32 @@ public class Controller implements ActionListener {
     public Controller(Model m, View v) {
         model = m;
         view = v;
+    }
+    
+    public void begin()
+    {
         timer = new Timer(100, this);
+        timer.setActionCommand("clockTimer");
         timer.start();
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        model.update();
+    public void actionPerformed(ActionEvent e)
+    {
+        String command = e.getActionCommand();
+        
+        //Speculative optimization to exit early on hot path.
+        if(command == "clockTimer")
+        {
+            model.update();
+            return;
+        }
+        
+        System.out.println(e.getActionCommand());
+        switch(e.getActionCommand())
+        {
+            
+            
+        }
     }
 }

@@ -8,8 +8,17 @@ import java.util.Observable;
 public class View implements Observer {
     
     ClockPanel panel;
+    Controller controller;
+    Model model;
     
     public View(Model model) {
+        this.model = model;
+    }
+    
+    public void init(Controller controller)
+    {
+        this.controller = controller;
+        
         JFrame frame = new JFrame();
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
@@ -52,9 +61,11 @@ public class View implements Observer {
         JMenuItem tempFakeAlarmItem1 = new JMenuItem("Alarm 1");
         JMenuItem tempFakeAlarmItem2 = new JMenuItem("Alarm 2");
         JMenuItem tempFakeAlarmItem3 = new JMenuItem("Alarm 3");
+        JMenuItem showAlarmEditorItem = new JMenuItem("Show Alarm Editor...");
         editAlarmSubMenu.add(tempFakeAlarmItem1);
         editAlarmSubMenu.add(tempFakeAlarmItem2);
         editAlarmSubMenu.add(tempFakeAlarmItem3);
+        editAlarmSubMenu.add(showAlarmEditorItem);
         
         JMenuItem resetAlarmsMenuItem = new JMenuItem("Reset All Alarms");
         JMenuItem alarmSoundMenuItem = new JMenuItem("Set Alarm Sound");
@@ -75,10 +86,32 @@ public class View implements Observer {
         menuBar.add(viewMenu);
         
         /* Finally add an about menu item to the menubar */
-        JMenuItem aboutMenuItem = new JMenuItem("About");
+        JMenuItem aboutMenuItem = new JMenu("About");
         menuBar.add(aboutMenuItem);
         
         frame.setJMenuBar(menuBar);
+        
+        /* ---- Set controller as the action listener for all menu items ---- */
+        
+        
+        newMenuItem.addActionListener(controller);
+        openMenuItem.addActionListener(controller);
+        saveMenuItem.addActionListener(controller);
+        saveAsMenuItem.addActionListener(controller);
+        
+        addAlarmMenuItem.addActionListener(controller);
+        tempFakeAlarmItem1.addActionListener(controller);
+        tempFakeAlarmItem2.addActionListener(controller);
+        tempFakeAlarmItem3.addActionListener(controller);
+        showAlarmEditorItem.addActionListener(controller);
+        resetAlarmsMenuItem.addActionListener(controller);
+        alarmSoundMenuItem.addActionListener(controller);
+        
+        clock24hMenuItem.addActionListener(controller);
+        digitalClockMenuItem.addActionListener(controller);
+        alarmEditorMenuItem.addActionListener(controller);
+        
+        aboutMenuItem.addActionListener(controller);
         
         JButton button = new JButton("Button 1 (PAGE_START)");
         pane.add(button, BorderLayout.PAGE_START);
