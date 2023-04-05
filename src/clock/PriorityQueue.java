@@ -1,67 +1,115 @@
 package clock;
 
+import java.util.Calendar;
+
 /**
- * Definition of the Priority Queue abstract data type.
- *
- * A collection of items, each with an integer priority. The item with the
- * highest priority is the one returned by head() and is the one removed by
- * remove().
- *
- * This is a generic (i.e. parameterised) type. T can be any class.
- *
- * Implementation method is not specified. Implementations may set a maximum
- * allowed number of items, or not.
- * 
- * @param <T> The type of items stored in the queue.
+ * Implementation of a PriorityQueue to track the alarms and order them by time
+ * until expiration. The implementation uses a sorted array internally.
  */
-public interface PriorityQueue<T> {
+public class PriorityQueue
+{
+    
+    /**
+     * Where the data is actually stored.
+     */
+    private Alarm[] storage;
 
     /**
-     * Add the given item to the queue with the given priority. Throw an
-     * exception if it's already full to capacity.
-     *
-     * @param item
-     * @param priority
-     * @throws QueueOverflowException
+     * The size of the storage array.
      */
-    public void add(T item, int priority) throws QueueOverflowException;
+    private int capacity;
 
     /**
-     * The highest priority item stored. Throw an exception if it's empty.
+     * The index of the last item stored.
      *
-     * @return The item with the highest priority
-     * @throws QueueUnderflowException
+     * This is equal to the item count minus one.
      */
-    public T head() throws QueueUnderflowException;
+    private int tailIndex;
 
     /**
-     * Remove the highest priority item from the queue. Throw an exception if
-     * it's empty.
+     * Create a new empty queue of the given size.
      *
-     * @throws QueueUnderflowException
+     * @param size
      */
-    public void remove() throws QueueUnderflowException;
+    public PriorityQueue(int size)
+    {
+        storage = new Alarm[size];
+        capacity = size;
+        tailIndex = -1;
+    }
 
-    /**
-     * Is the queue empty?
-     *
-     * @return True if there are no items stored, otherwise False
-     */
-    public boolean isEmpty();
+    public Alarm head() throws QueueUnderflowException
+    {
+        if (isEmpty()) {
+            throw new QueueUnderflowException();
+        } else {
+            return storage[0];
+        }
+    }
+
+    public void add(Calendar alarmTime, String message)
+    {
+        tailIndex = tailIndex + 1;
+        
+        /* Expand the array if neccessary */
+        if (tailIndex == capacity)
+        {
+            capacity *= 2;
+            Alarm[] temp = new Alarm[capacity];
+            System.arraycopy(storage, 0, temp, 0, tailIndex);
+            storage = temp;
+        }
+        
+        /* Scan backwards looking for insertion point */
+        int i = tailIndex;
+        while (i > 0 && storage[i - 1].getAlarmTimeInMillis() > alarmTime.getTimeInMillis())
+        {
+            storage[i] = storage[i - 1];
+            i = i - 1;
+        }
+        storage[i] = new Alarm(message, alarmTime);
+    }
+    
+    public Alarm get(int index) throws ArrayIndexOutOfBoundsException
+    {
+        if(index < 0 || index > tailIndex)
+            throw new ArrayIndexOutOfBoundsException();
+        
+        return storage[index];
+    }
+
+    public void remove(int index) throws QueueUnderflowException, ArrayIndexOutOfBoundsException
+    {
+        if (isEmpty()) {
+            throw new QueueUnderflowException();
+        } else if(index <= tailIndex){
+            for (int i = index; i < tailIndex; i++) {
+                storage[i] = storage[i + 1];
+            }
+            tailIndex = tailIndex - 1;
+        }
+        else
+        {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+    }
+
+    public boolean isEmpty()
+    {
+        return tailIndex < 0;
+    }
 
     @Override
-    /**
-     * A string representation of the entire queue.
-     *
-     * This should be formatted as a list, in square brackets.
-     *
-     * Each item should be shown as an ordered pair in parentheses together with
-     * its priority.
-     *
-     * The items may be listed in any order. In particular there is no
-     * requirement that the item returned by head() should be listed first.
-     *
-     * For example: [(Fred, 10), (Mabel, 15), (Jane, 5)]
-     */
-    public String toString();
+    public String toString()
+    {
+        String result = "[";
+        for (int i = 0; i <= tailIndex; i++) {
+            if (i > 0) {
+                result = result + ", ";
+            }
+            result = result + storage[i];
+        }
+        result = result + "]";
+        return result;
+    }
 }
