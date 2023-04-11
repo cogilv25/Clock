@@ -77,6 +77,11 @@ public class PriorityQueue
         
         return storage[index];
     }
+    
+    public int getCount()
+    {
+        return tailIndex+1;
+    }
 
     public void remove(int index) throws QueueUnderflowException, ArrayIndexOutOfBoundsException
     {

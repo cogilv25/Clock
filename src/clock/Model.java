@@ -15,38 +15,40 @@ public class Model extends Observable {
     
     int oldSecond = 0;
     
+    //The alarm that is currently activated or "ringing" otherwise null.
+    Alarm activatedAlarm = null;
     
     PriorityQueue q;
     
     public Model()
     {
         q = new PriorityQueue(4);
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(c.getTimeInMillis()+10000);
-        q.add(c, "Alarm 3");
-        c = Calendar.getInstance();
-        c.setTimeInMillis(c.getTimeInMillis()+2000);
-        q.add(c, "Alarm 1");
-        c = Calendar.getInstance();
-        c.setTimeInMillis(c.getTimeInMillis()+5000);
-        q.add(c, "Alarm 2");
-        c = Calendar.getInstance();
-        c.setTimeInMillis(c.getTimeInMillis()+18000);
-        q.add(c, "Alarm 6");
-        c = Calendar.getInstance();
-        c.setTimeInMillis(c.getTimeInMillis()+14000);
-        q.add(c, "Alarm 5");
-        c = Calendar.getInstance();
-        c.setTimeInMillis(c.getTimeInMillis()+12000);
-        q.add(c, "Alarm 4");
-        
-        System.out.println(q.toString());
         update();
     }
     
-    public void addAlarm()
+    public void addAlarm(Calendar alarmTime, String message)
     {
-        
+        q.add(alarmTime, message);
+    }
+    
+    public void removeAlarm(int index) throws ArrayIndexOutOfBoundsException, QueueUnderflowException
+    {
+        q.remove(index);
+    }
+    
+    public void stopActivatedAlarm()
+    {
+        activatedAlarm = null;
+    }
+    
+    public Alarm getAlarm(int index) throws ArrayIndexOutOfBoundsException
+    {
+        return q.get(index);
+    }
+    
+    public int getNumberOfAlarms()
+    {
+        return q.getCount();
     }
     
     public void update()
@@ -57,7 +59,7 @@ public class Model extends Observable {
             if(!q.isEmpty())
                 if(date.getTimeInMillis() > q.head().getAlarmTimeInMillis())
                 {
-                    System.out.println(q.head().getMessage());
+                    activatedAlarm = q.head();
                     q.remove(0);
                 }
         } 
