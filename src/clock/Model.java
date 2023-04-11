@@ -27,7 +27,7 @@ public class Model extends Observable {
         q = new PriorityQueue(4);
         update();
         Calendar temp = Calendar.getInstance();
-        temp.setTimeInMillis(temp.getTimeInMillis() + 3600000);
+        temp.setTimeInMillis(temp.getTimeInMillis() + 2000);
         addAlarm(temp, "Just a test");
     }
     
@@ -79,10 +79,15 @@ public class Model extends Observable {
                 {
                     activatedAlarm = q.head();
                     q.remove(0);
-                    
+                    try{
                     //Update alarmHour & alarmMinute
                     alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
                     alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
+                    }
+                    catch(QueueUnderflowException e)
+                    {
+                        //If there are no more alarms in the queue that's fine.
+                    }
                 }
         } 
         catch (QueueUnderflowException | ArrayIndexOutOfBoundsException ex)

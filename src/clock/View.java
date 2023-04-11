@@ -161,5 +161,10 @@ public class View implements Observer {
     
     public void update(Observable o, Object arg) {
         panel.repaint();
+        if(model.activatedAlarm != null)
+        {
+            JOptionPane.showMessageDialog(null, model.activatedAlarm.getMessage());
+            model.activatedAlarm = null;
+        }
     }
 }

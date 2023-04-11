@@ -77,18 +77,22 @@ public class ClockPanel extends JPanel {
                           (new Float(y1 + height/2 - descent)).floatValue());
         }
         
+        double x1, y1;
         // Draw the alarm hand I want this under all other hands so it has to
         // be drawn first.
-        gg.setColor(Color.blue);
-        gg.setStroke(new BasicStroke(2.0f));
-        theta = (90 - (model.alarmHour + model.alarmMinute / 60.0) * 30) / (180 / Math.PI);
-        radius = 0.5 * size;
-        double x1 = x0 + radius * Math.cos(theta);
-        double y1 = y0 - radius * Math.sin(theta);
-        gg.draw(new Line2D.Double(x0, y0, x1, y1));
-        
-        //Reset the draw color to black
-        gg.setColor(Color.black);
+        if(model.activatedAlarm != null)
+        {
+            gg.setColor(Color.blue);
+            gg.setStroke(new BasicStroke(2.0f));
+            theta = (90 - (model.alarmHour + model.alarmMinute / 60.0) * 30) / (180 / Math.PI);
+            radius = 0.5 * size;
+            x1 = x0 + radius * Math.cos(theta);
+            y1 = y0 - radius * Math.sin(theta);
+            gg.draw(new Line2D.Double(x0, y0, x1, y1));
+
+            //Reset the draw color to black
+            gg.setColor(Color.black);
+        }
         
         // Draw the hour hand
         gg.setStroke(new BasicStroke(2.0f));
