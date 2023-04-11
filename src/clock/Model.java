@@ -26,16 +26,32 @@ public class Model extends Observable {
     {
         q = new PriorityQueue(4);
         update();
+        Calendar temp = Calendar.getInstance();
+        temp.setTimeInMillis(temp.getTimeInMillis() + 3600000);
+        addAlarm(temp, "Just a test");
     }
     
     public void addAlarm(Calendar alarmTime, String message)
     {
         q.add(alarmTime, message);
+        try{
+        //Update alarmHour & alarmMinute
+        alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
+        alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
+        System.out.println("Hour = " + alarmHour + "\nMinute = " + alarmMinute);
+        }
+        catch(QueueUnderflowException e)
+        {
+            System.out.println("After adding an alarm there was no alarm in the queue");
+        }
     }
     
     public void removeAlarm(int index) throws ArrayIndexOutOfBoundsException, QueueUnderflowException
     {
         q.remove(index);
+        //Update alarmHour & alarmMinute
+        alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
+        alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
     }
     
     public void stopActivatedAlarm()
@@ -65,8 +81,8 @@ public class Model extends Observable {
                     q.remove(0);
                     
                     //Update alarmHour & alarmMinute
-                    alarmHour = activatedAlarm.getAlarmTime().get(Calendar.HOUR);
-                    alarmMinute = activatedAlarm.getAlarmTime().get(Calendar.MINUTE);
+                    alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
+                    alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
                 }
         } 
         catch (QueueUnderflowException | ArrayIndexOutOfBoundsException ex)
