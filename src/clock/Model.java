@@ -17,6 +17,8 @@ public class Model extends Observable {
     
     //The alarm that is currently activated or "ringing" otherwise null.
     Alarm activatedAlarm = null;
+    int alarmHour = 0;
+    int alarmMinute = 0;
     
     PriorityQueue q;
     
@@ -61,6 +63,10 @@ public class Model extends Observable {
                 {
                     activatedAlarm = q.head();
                     q.remove(0);
+                    
+                    //Update alarmHour & alarmMinute
+                    alarmHour = activatedAlarm.getAlarmTime().get(Calendar.HOUR);
+                    alarmMinute = activatedAlarm.getAlarmTime().get(Calendar.MINUTE);
                 }
         } 
         catch (QueueUnderflowException | ArrayIndexOutOfBoundsException ex)
