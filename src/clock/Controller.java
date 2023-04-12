@@ -45,15 +45,18 @@ public class Controller implements ActionListener {
             case "Show Alarm Editor...":
                 view.showAlarmEditorItem.setText("Hide Alarm Editor...");
                 view.alarmEditorMenuItem.setState(true);
+                view.toggleAlarmEditorVisibility();
                 break;
             case "Hide Alarm Editor...":
                 view.showAlarmEditorItem.setText("Show Alarm Editor...");
                 view.alarmEditorMenuItem.setState(false);
+                view.toggleAlarmEditorVisibility();
                 break;
             case "Alarm Editor":
                 String value = view.alarmEditorMenuItem.getState() ? 
                         "Hide Alarm Editor..." : "Show Alarm Editor...";
                 view.showAlarmEditorItem.setText(value);
+                view.toggleAlarmEditorVisibility();
                 break;
             case "24h Clock":
                 break;

@@ -22,10 +22,11 @@ public class View implements Observer {
     JMenu editMenu;
         JMenuItem addAlarmMenuItem;
         JMenu editAlarmSubMenu;
-            JMenuItem tempFakeAlarmItem1;
-            JMenuItem tempFakeAlarmItem2;
-            JMenuItem tempFakeAlarmItem3;
+            JMenuItem editAlarmItem1;
+            JMenuItem editAlarmItem2;
+            JMenuItem editAlarmItem3;
             JMenuItem showAlarmEditorItem;
+            
         JMenuItem resetAlarmsMenuItem;
         JMenuItem alarmSoundMenuItem;
 
@@ -36,6 +37,20 @@ public class View implements Observer {
 
     JMenuItem aboutMenuItem;
     
+    // Alarm Editor
+    JPanel alarmEditorPanel;
+        JScrollPane alarmEditorPane;
+            JList alarmEditorList;
+        JButton button;
+        JButton button2;
+    
+    // Internal
+    DefaultListModel listModel;
+    
+    JFrame frame;
+    
+    boolean alarmEditorVisible = false;
+    
     public View(Model model) {
         this.model = model;
     }
@@ -44,7 +59,8 @@ public class View implements Observer {
     {
         this.controller = controller;
         
-        JFrame frame = new JFrame();
+        frame = new JFrame();
+        frame.setLayout(new GridLayout(1,1));
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
         frame.setTitle("Java Clock");
@@ -83,13 +99,13 @@ public class View implements Observer {
         
         /* Edit Alarm Sub Menu TODO: Populate with active alarms. */
         editAlarmSubMenu = new JMenu("Edit Alarm");
-        tempFakeAlarmItem1 = new JMenuItem("Alarm 1");
-        tempFakeAlarmItem2 = new JMenuItem("Alarm 2");
-        tempFakeAlarmItem3 = new JMenuItem("Alarm 3");
+        editAlarmItem1 = new JMenuItem("Alarm 1");
+        editAlarmItem2 = new JMenuItem("Alarm 2");
+        editAlarmItem3 = new JMenuItem("Alarm 3");
         showAlarmEditorItem = new JMenuItem("Show Alarm Editor...");
-        editAlarmSubMenu.add(tempFakeAlarmItem1);
-        editAlarmSubMenu.add(tempFakeAlarmItem2);
-        editAlarmSubMenu.add(tempFakeAlarmItem3);
+        editAlarmSubMenu.add(editAlarmItem1);
+        editAlarmSubMenu.add(editAlarmItem2);
+        editAlarmSubMenu.add(editAlarmItem3);
         editAlarmSubMenu.add(showAlarmEditorItem);
         
         resetAlarmsMenuItem = new JMenuItem("Reset All Alarms");
@@ -116,6 +132,53 @@ public class View implements Observer {
         
         frame.setJMenuBar(menuBar);
         
+        /* ----------------- Construct Alarm Editor ------------------------- */
+        button = new JButton("Edit");
+        button2 = new JButton("Delete");
+        alarmEditorPanel = new JPanel();
+        listModel = new DefaultListModel();
+        alarmEditorList = new JList(listModel);
+        alarmEditorPane = new JScrollPane(alarmEditorList);
+        //alarmEditorPanel.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        alarmEditorPanel.add(alarmEditorPane);
+        
+        /*gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        alarmEditorPanel.add(button, gbc);
+        
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        alarmEditorPanel.add(button2, gbc);*/
+        
+        
+        listModel.addElement("Hello");
+        listModel.addElement("There");
+        listModel.addElement("Sir");
+        listModel.addElement("Jimmy");
+        listModel.addElement("He2llo");
+        listModel.addElement("The2re");
+        listModel.addElement("Si1r");
+        listModel.addElement("Ji3mmy");
+        listModel.addElement("He4llo");
+        listModel.addElement("Th2ere");
+        listModel.addElement("Si5r");
+        listModel.addElement("Ji7mmyJi7mmy");
+        listModel.addElement("The2reThe2re");
+        listModel.addElement("Si1rThe2re");
+        listModel.addElement("Ji3mThe2remy");
+        listModel.addElement("He4The2rello");
+        listModel.addElement("TThe2reh2ere");
+        listModel.addElement("Si5The2re");
+        listModel.addElement("Ji7mThe2remy");
+        
         /* ---- Set controller as the action listener for all menu items ---- */
         
         
@@ -125,9 +188,9 @@ public class View implements Observer {
         saveAsMenuItem.addActionListener(controller);
         
         addAlarmMenuItem.addActionListener(controller);
-        tempFakeAlarmItem1.addActionListener(controller);
-        tempFakeAlarmItem2.addActionListener(controller);
-        tempFakeAlarmItem3.addActionListener(controller);
+        editAlarmItem1.addActionListener(controller);
+        editAlarmItem2.addActionListener(controller);
+        editAlarmItem3.addActionListener(controller);
         showAlarmEditorItem.addActionListener(controller);
         resetAlarmsMenuItem.addActionListener(controller);
         alarmSoundMenuItem.addActionListener(controller);
@@ -138,25 +201,37 @@ public class View implements Observer {
         
         aboutMenuItem.addActionListener(controller);
         
-        JButton button = new JButton("Button 1 (PAGE_START)");
-        pane.add(button, BorderLayout.PAGE_START);
          
         panel.setPreferredSize(new Dimension(200, 200));
-        pane.add(panel, BorderLayout.CENTER);
-         
-        button = new JButton("Button 3 (LINE_START)");
-        pane.add(button, BorderLayout.LINE_START);
-         
-        button = new JButton("Long-Named Button 4 (PAGE_END)");
-        pane.add(button, BorderLayout.PAGE_END);
-         
-        button = new JButton("5 (LINE_END)");
-        pane.add(button, BorderLayout.LINE_END);
+        pane.add(panel);
         
         // End of borderlayout code
         
         frame.pack();
         frame.setVisible(true);
+    }
+    
+    public void toggleAlarmEditorVisibility()
+    {
+        Container pane = frame.getContentPane();
+        
+        if(alarmEditorVisible)
+        {
+            pane.remove(alarmEditorPane);
+            frame.setLayout(new GridLayout(1,1));
+        }
+        else
+        {
+            pane.remove(panel);
+            frame.setLayout(new GridLayout(1,2));
+            pane.add(alarmEditorPane);
+            pane.add(panel);
+        }
+        
+        alarmEditorVisible = ! alarmEditorVisible;
+        frame.setMinimumSize(frame.getSize());
+        frame.pack();
+        frame.setMinimumSize(null);
     }
     
     public void update(Observable o, Object arg) {
