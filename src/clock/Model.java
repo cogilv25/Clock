@@ -22,6 +22,8 @@ public class Model extends Observable {
     
     PriorityQueue q;
     
+    boolean qUpdated = false;
+    
     public Model()
     {
         q = new PriorityQueue(4);
@@ -42,8 +44,10 @@ public class Model extends Observable {
         }
         catch(QueueUnderflowException e)
         {
+            //This shoud be impossible, so we will log if it happens.
             System.out.println("After adding an alarm there was no alarm in the queue");
         }
+        qUpdated = true;
     }
     
     public void removeAlarm(int index) throws ArrayIndexOutOfBoundsException, QueueUnderflowException
@@ -52,6 +56,7 @@ public class Model extends Observable {
         //Update alarmHour & alarmMinute
         alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
         alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
+        qUpdated = true;
     }
     
     public void stopActivatedAlarm()
@@ -78,13 +83,10 @@ public class Model extends Observable {
                 if(date.getTimeInMillis() > q.head().getAlarmTimeInMillis())
                 {
                     activatedAlarm = q.head();
-                    q.remove(0);
                     try{
-                    //Update alarmHour & alarmMinute
-                    alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
-                    alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
+                    removeAlarm(0);
                     }
-                    catch(QueueUnderflowException e)
+                    catch(QueueUnderflowException | ArrayIndexOutOfBoundsException e)
                     {
                         //If there are no more alarms in the queue that's fine.
                     }
@@ -92,7 +94,8 @@ public class Model extends Observable {
         } 
         catch (QueueUnderflowException | ArrayIndexOutOfBoundsException ex)
         {
-            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+            //This shoud be impossible, so we will log if it happens.
+            System.out.println("Queue.head() Exception when Queue not empty");
         }
         hour = date.get(Calendar.HOUR);
         minute = date.get(Calendar.MINUTE);

@@ -1,6 +1,7 @@
 package clock;
 
 import java.awt.*;
+import java.util.Calendar;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
@@ -10,6 +11,8 @@ public class View implements Observer {
     ClockPanel panel;
     Controller controller;
     Model model;
+    
+    AlarmDialog alarmDialog;
     
     
     //Indentation used to indicate sub-items
@@ -43,6 +46,7 @@ public class View implements Observer {
             JList alarmEditorList;
         JButton button;
         JButton button2;
+        JButton button3;
     
     // Internal
     DefaultListModel listModel;
@@ -58,6 +62,8 @@ public class View implements Observer {
     public void init(Controller controller)
     {
         this.controller = controller;
+        
+        alarmDialog = new AlarmDialog();
         
         frame = new JFrame();
         frame.setLayout(new GridLayout(1,1));
@@ -133,51 +139,38 @@ public class View implements Observer {
         frame.setJMenuBar(menuBar);
         
         /* ----------------- Construct Alarm Editor ------------------------- */
-        button = new JButton("Edit");
-        button2 = new JButton("Delete");
-        alarmEditorPanel = new JPanel();
+        button = new JButton("Add");
+        button2 = new JButton("Edit");
+        button3 = new JButton("Remove");
+        alarmEditorPanel = new JPanel(new GridBagLayout());
         listModel = new DefaultListModel();
         alarmEditorList = new JList(listModel);
         alarmEditorPane = new JScrollPane(alarmEditorList);
-        //alarmEditorPanel.setLayout(new GridBagLayout());
         
         GridBagConstraints gbc = new GridBagConstraints();
         
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridwidth = 3; gbc.gridheight = 1;
+        gbc.weighty = 0.8; gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
         alarmEditorPanel.add(alarmEditorPane);
         
-        /*gbc.gridwidth = 1;
+        
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 1;
         gbc.gridheight = 1;
+        gbc.weighty = 0.2;
         gbc.gridx = 0;
         gbc.gridy = 1;
         alarmEditorPanel.add(button, gbc);
         
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        alarmEditorPanel.add(button2, gbc);*/
+        alarmEditorPanel.add(button2, gbc);
         
-        
-        listModel.addElement("Hello");
-        listModel.addElement("There");
-        listModel.addElement("Sir");
-        listModel.addElement("Jimmy");
-        listModel.addElement("He2llo");
-        listModel.addElement("The2re");
-        listModel.addElement("Si1r");
-        listModel.addElement("Ji3mmy");
-        listModel.addElement("He4llo");
-        listModel.addElement("Th2ere");
-        listModel.addElement("Si5r");
-        listModel.addElement("Ji7mmyJi7mmy");
-        listModel.addElement("The2reThe2re");
-        listModel.addElement("Si1rThe2re");
-        listModel.addElement("Ji3mThe2remy");
-        listModel.addElement("He4The2rello");
-        listModel.addElement("TThe2reh2ere");
-        listModel.addElement("Si5The2re");
-        listModel.addElement("Ji7mThe2remy");
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        alarmEditorPanel.add(button3, gbc);
         
         /* ---- Set controller as the action listener for all menu items ---- */
         
@@ -201,8 +194,13 @@ public class View implements Observer {
         
         aboutMenuItem.addActionListener(controller);
         
+        button.addActionListener(controller);
+        button2.addActionListener(controller);
+        button3.addActionListener(controller);
+        
          
         panel.setPreferredSize(new Dimension(200, 200));
+        frame.setBounds(500, 500, 200, 200);
         pane.add(panel);
         
         // End of borderlayout code
@@ -217,14 +215,14 @@ public class View implements Observer {
         
         if(alarmEditorVisible)
         {
-            pane.remove(alarmEditorPane);
+            pane.remove(alarmEditorPanel);
             frame.setLayout(new GridLayout(1,1));
         }
         else
         {
             pane.remove(panel);
             frame.setLayout(new GridLayout(1,2));
-            pane.add(alarmEditorPane);
+            pane.add(alarmEditorPanel);
             pane.add(panel);
         }
         
@@ -234,8 +232,46 @@ public class View implements Observer {
         frame.setMinimumSize(null);
     }
     
+    public Alarm showAlarmDialog()
+    {
+        Calendar timePlusOneHour = Calendar.getInstance();
+        timePlusOneHour.setTimeInMillis(
+                timePlusOneHour.getTimeInMillis() + (1000 * 60 * 60));
+        
+        return showAlarmDialog(new Alarm("", timePlusOneHour));
+    }
+    
+    public Alarm showAlarmDialog(Alarm alarmToEdit)
+    {
+        alarmDialog.setAlarm(alarmToEdit);
+        
+        int selection = alarmDialog.show();
+        
+        if(selection == JOptionPane.OK_OPTION)
+            return alarmDialog.getAlarm();
+        else
+            return null;
+    }
+    
+    public int getAlarmEditorSelectionIndex()
+    {
+        return alarmEditorList.getSelectedIndex();
+    }
+    
     public void update(Observable o, Object arg) {
+        
+        int preserveSelection = alarmEditorList.getSelectedIndex();
+        if(model.qUpdated)
+        {
+            listModel.clear();
+            for(int i = 0; i < model.q.getCount(); i++)
+            {
+                listModel.add(i,model.q.get(i).toString());
+            }
+            model.qUpdated = false;
+        }
         panel.repaint();
+        alarmEditorList.setSelectedIndex(preserveSelection);
         if(model.activatedAlarm != null)
         {
             JOptionPane.showMessageDialog(null, model.activatedAlarm.getMessage());

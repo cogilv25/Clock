@@ -87,11 +87,15 @@ public class PriorityQueue
     {
         if (isEmpty()) {
             throw new QueueUnderflowException();
-        } else if(index <= tailIndex){
-            for (int i = index; i < tailIndex; i++) {
+        } else if (tailIndex == 0 && index == 0)
+        {
+            storage[0] = null;
+            tailIndex--;
+        }else if(index < tailIndex){
+            for (int i = index; i <= tailIndex; i++) {
                 storage[i] = storage[i + 1];
             }
-            tailIndex = tailIndex - 1;
+            tailIndex --;
         }
         else
         {

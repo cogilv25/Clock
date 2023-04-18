@@ -33,13 +33,14 @@ public class Controller implements ActionListener {
         String command = e.getActionCommand();
         
         //Speculative optimization to exit early on hot path.
-        if(command == "clockTimer")
+        if(command.equals("clockTimer"))
         {
             model.update();
             return;
         }
         
         System.out.println(e.getActionCommand());
+        Alarm alarm;
         switch(e.getActionCommand())
         {
             case "Show Alarm Editor...":
@@ -61,6 +62,18 @@ public class Controller implements ActionListener {
             case "24h Clock":
                 break;
             case "Digital Clock":
+                break;
+            case "Add":
+            case "Add Alarm":
+                alarm = view.showAlarmDialog();
+                if(alarm != null)
+                    model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
+                break;
+            case "Edit":
+                alarm = view.showAlarmDialog(model.getAlarm(
+                        view.getAlarmEditorSelectionIndex()));
+                if(alarm != null)
+                    model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
                 break;
         }
     }
