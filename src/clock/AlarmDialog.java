@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
@@ -20,7 +20,7 @@ public class AlarmDialog
 {
     private List<JComponent> components;
     
-    private JTextArea alarmMessage;
+    private JTextField alarmMessage;
     private SpinnerModel hourSpinnerModel;
     private SpinnerModel minuteSpinnerModel;
     private SpinnerModel secondSpinnerModel;
@@ -34,7 +34,7 @@ public class AlarmDialog
     public AlarmDialog()
     {
         components = new ArrayList<>();
-        alarmMessage = new JTextArea();
+        alarmMessage = new JTextField();
 
         Calendar now = Calendar.getInstance();
         
