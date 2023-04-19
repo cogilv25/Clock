@@ -40,7 +40,6 @@ public class Model extends Observable {
         //Update alarmHour & alarmMinute
         alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
         alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
-        System.out.println("Hour = " + alarmHour + "\nMinute = " + alarmMinute);
         }
         catch(QueueUnderflowException e)
         {
@@ -53,15 +52,25 @@ public class Model extends Observable {
     public void removeAlarm(int index) throws ArrayIndexOutOfBoundsException, QueueUnderflowException
     {
         q.remove(index);
+        qUpdated = true;
         //Update alarmHour & alarmMinute
         alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
         alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
-        qUpdated = true;
     }
     
     public void stopActivatedAlarm()
     {
         activatedAlarm = null;
+        
+        try{
+            //Update alarmHour & alarmMinute
+            alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
+            alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
+        }
+        catch(QueueUnderflowException e)
+        {
+            //If there are no more alarms in the queue that's fine.
+        }
     }
     
     public Alarm getAlarm(int index) throws ArrayIndexOutOfBoundsException

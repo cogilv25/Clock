@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.font.*;
+import static java.lang.Float.max;
 import javax.swing.*;
 
 public class ClockPanel extends JPanel {
@@ -80,12 +81,12 @@ public class ClockPanel extends JPanel {
         double x1, y1;
         // Draw the alarm hand I want this under all other hands so it has to
         // be drawn first.
-        if(model.activatedAlarm != null)
+        if(!model.q.isEmpty())
         {
             gg.setColor(Color.blue);
-            gg.setStroke(new BasicStroke(2.0f));
+            gg.setStroke(new BasicStroke(max(0.01f*size,1.5f)));
             theta = (90 - (model.alarmHour + model.alarmMinute / 60.0) * 30) / (180 / Math.PI);
-            radius = 0.5 * size;
+            radius = 0.6 * size;
             x1 = x0 + radius * Math.cos(theta);
             y1 = y0 - radius * Math.sin(theta);
             gg.draw(new Line2D.Double(x0, y0, x1, y1));
@@ -95,7 +96,7 @@ public class ClockPanel extends JPanel {
         }
         
         // Draw the hour hand
-        gg.setStroke(new BasicStroke(2.0f));
+        gg.setStroke(new BasicStroke(max(0.012f*size,2.0f)));
         theta = (90 - (model.hour + model.minute / 60.0) * 30) / (180 / Math.PI);
         radius = 0.5 * size;
         x1 = x0 + radius * Math.cos(theta);
@@ -103,7 +104,7 @@ public class ClockPanel extends JPanel {
         gg.draw(new Line2D.Double(x0, y0, x1, y1));
         
         // Draw the minute hand
-        gg.setStroke(new BasicStroke(1.1f));
+        gg.setStroke(new BasicStroke(max(0.006f*size,1.0f)));
         theta = (90 - (model.minute + model.second / 60.0) * 6) / (180 / Math.PI);
         radius = 0.75 * size;
         x1 = x0 + radius * Math.cos(theta);
@@ -112,7 +113,7 @@ public class ClockPanel extends JPanel {
         
         // Draw the second hand
         gg.setColor(Color.red);
-        gg.setStroke(new BasicStroke(0));
+        gg.setStroke(new BasicStroke(0.003f*size));
         theta = (90 - model.second * 6) / (180 / Math.PI);
         x1 = x0 + radius * Math.cos(theta);
         y1 = y0 - radius * Math.sin(theta);

@@ -70,11 +70,20 @@ public class Controller implements ActionListener {
                     model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
                 break;
             case "Edit":
-                alarm = view.showAlarmDialog(model.getAlarm(
-                        view.getAlarmEditorSelectionIndex()));
-                if(alarm != null)
-                    model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
+                alarm = model.getAlarm(view.getAlarmEditorSelectionIndex());
+                Alarm newAlarm = view.showAlarmDialog(alarm);
+                if(newAlarm != null)
+                {
+                    alarm.setAlarmTime(newAlarm.getAlarmTime());
+                    alarm.setMessage(newAlarm.getMessage());
+                    model.qUpdated = true;
+                }
                 break;
+            case "Remove":
+                try {model.removeAlarm(view.getAlarmEditorSelectionIndex());}
+                catch(QueueUnderflowException throwaway){}
+                break;
+
         }
     }
 }
