@@ -1,10 +1,14 @@
 package clock;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.nio.file.Path;
 import java.util.Calendar;
 import javax.swing.*;
 import java.util.Observer;
 import java.util.Observable;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class View implements Observer {
     
@@ -102,22 +106,12 @@ public class View implements Observer {
         /* ------------------- Construct Edit Menu -------------------------- */
         editMenu = new JMenu("Edit");
         addAlarmMenuItem = new JMenuItem("Add Alarm");
-        
-        /* Edit Alarm Sub Menu TODO: Populate with active alarms. */
-        editAlarmSubMenu = new JMenu("Edit Alarm");
-        editAlarmItem1 = new JMenuItem("Alarm 1");
-        editAlarmItem2 = new JMenuItem("Alarm 2");
-        editAlarmItem3 = new JMenuItem("Alarm 3");
         showAlarmEditorItem = new JMenuItem("Show Alarm Editor...");
-        editAlarmSubMenu.add(editAlarmItem1);
-        editAlarmSubMenu.add(editAlarmItem2);
-        editAlarmSubMenu.add(editAlarmItem3);
-        editAlarmSubMenu.add(showAlarmEditorItem);
-        
         resetAlarmsMenuItem = new JMenuItem("Reset All Alarms");
         alarmSoundMenuItem = new JMenuItem("Set Alarm Sound");
+        
         editMenu.add(addAlarmMenuItem);
-        editMenu.add(editAlarmSubMenu);
+        editMenu.add(showAlarmEditorItem);
         editMenu.add(resetAlarmsMenuItem);
         editMenu.add(alarmSoundMenuItem);
         menuBar.add(editMenu);
@@ -181,9 +175,6 @@ public class View implements Observer {
         saveAsMenuItem.addActionListener(controller);
         
         addAlarmMenuItem.addActionListener(controller);
-        editAlarmItem1.addActionListener(controller);
-        editAlarmItem2.addActionListener(controller);
-        editAlarmItem3.addActionListener(controller);
         showAlarmEditorItem.addActionListener(controller);
         resetAlarmsMenuItem.addActionListener(controller);
         alarmSoundMenuItem.addActionListener(controller);
@@ -257,6 +248,30 @@ public class View implements Observer {
     {
         return alarmEditorList.getSelectedIndex();
     }
+    
+    public File showSaveFileDialog()
+    {
+        JFileChooser fileDialog = new JFileChooser();
+        
+        fileDialog.setFileFilter(new FileNameExtensionFilter("ICalendar File", "ical", "ics", "ifb", "icalendar"));
+        fileDialog.setVisible(true);
+        if(fileDialog.showSaveDialog(frame)== JFileChooser.APPROVE_OPTION)
+            return fileDialog.getSelectedFile();
+        else
+            return null;
+    }
+    public File showOpenFileDialog()
+    {
+        JFileChooser fileDialog = new JFileChooser();
+        
+        fileDialog.setFileFilter(new FileNameExtensionFilter("ICalendar File", "ical", "ics", "ifb", "icalendar"));
+        fileDialog.setVisible(true);
+        if(fileDialog.showOpenDialog(frame)== JFileChooser.APPROVE_OPTION)
+            return fileDialog.getSelectedFile();
+        else
+            return null;
+    }
+    
     
     public void update(Observable o, Object arg) {
         

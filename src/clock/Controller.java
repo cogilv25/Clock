@@ -1,6 +1,7 @@
 package clock;
 
 import java.awt.event.*;
+import java.io.File;
 import javax.swing.Timer;
 
 /* Essentially the MVC architecture boils down to Controller (this class)
@@ -41,6 +42,7 @@ public class Controller implements ActionListener {
         
         System.out.println(e.getActionCommand());
         Alarm alarm;
+        File file;
         switch(e.getActionCommand())
         {
             case "Show Alarm Editor...":
@@ -82,6 +84,13 @@ public class Controller implements ActionListener {
             case "Remove":
                 try {model.removeAlarm(view.getAlarmEditorSelectionIndex());}
                 catch(QueueUnderflowException throwaway){}
+                break;
+            case "Open":
+                file = view.showOpenFileDialog();
+                break;
+            case "Save as...":
+                file = view.showSaveFileDialog();
+            case "Save":
                 break;
 
         }
