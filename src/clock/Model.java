@@ -1,5 +1,6 @@
 package clock;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -19,6 +20,8 @@ public class Model extends Observable {
     Alarm activatedAlarm = null;
     int alarmHour = 0;
     int alarmMinute = 0;
+    
+    ICalFileHandler iCalFile;
     
     PriorityQueue q;
     
@@ -46,6 +49,22 @@ public class Model extends Observable {
             //This shoud be impossible, so we will log if it happens.
             System.out.println("After adding an alarm there was no alarm in the queue");
         }
+        qUpdated = true;
+    }
+    
+    public void setActiveFile(File file)
+    {
+        iCalFile.setFile(file);
+    }
+    
+    public void saveStateToActiveFile()
+    {
+        iCalFile.saveAlarmQueue(q);
+    }
+    
+    public void loadStateFromActiveFile()
+    {
+        q = iCalFile.loadAlarmQueue();
         qUpdated = true;
     }
     
