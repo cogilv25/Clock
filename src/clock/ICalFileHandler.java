@@ -3,9 +3,10 @@ package clock;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,18 +20,16 @@ class ICalFileHandler {
     
     void saveAlarmQueue(PriorityQueue queue)
     {
-        File temp = null;
         if(file == null)
             return;
         
         if(file.exists())
         {
-            temp = Paths.get(file.getAbsolutePath() + ".temp").toFile();
-            try {
-                Files.move(file.toPath(),temp.toPath(),REPLACE_EXISTING);
-            } catch (IOException ex) {
-                Logger.getLogger(ICalFileHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
+        }
+        else
+        {
+            
         }
         //Write File
     }
@@ -43,7 +42,64 @@ class ICalFileHandler {
         if(!file.exists())
             throw new IllegalArgumentException();
         
-        return new PriorityQueue(4);
+        List<String> buffer;
+        
+        try{
+            buffer = Files.readAllLines(file.toPath());
+        }
+        catch(IOException e)
+        {
+            System.out.println("IOEXCEPTION");
+            return null;
+        }
+        
+        PriorityQueue q = new PriorityQueue(4);
+        boolean inEvent = false;
+        String message = null;
+        String DTStamp = null;
+        
+        for (String line : buffer)
+        {
+            if(line.startsWith("BEGIN:VEVENT"))
+                if(inEvent)
+                    return null;
+                else
+                    inEvent = true;
+            else if(line.startsWith("DTSTAMP:"))
+                if(!inEvent)
+                    return null;
+                else
+                    DTStamp = line.substring(line.indexOf(':') + 1);
+            else if(line.startsWith("SUMMARY:"))
+                if(!inEvent)
+                    return null;
+                else
+                    message = line.substring(line.indexOf(':') + 1);
+            else if(line.startsWith("END:VEVENT"))
+                if(!inEvent)
+                    return null;
+                else if(message == null || DTStamp == null )
+                    return null;
+                else
+                {
+                    Calendar cal = Calendar.getInstance();
+                    try 
+                    {
+                        cal.setTime((new SimpleDateFormat("yyyyMMdd'T'HHmmss").parse(DTStamp)));
+                    } 
+                    catch (ParseException e) 
+                    {
+                        System.out.println(e.getMessage());
+                        return null;
+                    }
+                    q.add(cal, message);
+                    message = null;
+                    DTStamp = null;
+                    inEvent = false;
+                }
+                    
+        }
+        return q;
     }
     
     void setFile(File file)

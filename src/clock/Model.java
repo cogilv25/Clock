@@ -30,6 +30,7 @@ public class Model extends Observable {
     public Model()
     {
         q = new PriorityQueue(4);
+        iCalFile = new ICalFileHandler();
         update();
         Calendar temp = Calendar.getInstance();
         temp.setTimeInMillis(temp.getTimeInMillis() + 2000);
@@ -54,18 +55,34 @@ public class Model extends Observable {
     
     public void setActiveFile(File file)
     {
-        iCalFile.setFile(file);
+        if(file != null)
+            iCalFile.setFile(file);
     }
     
-    public void saveStateToActiveFile()
+    public boolean saveStateToActiveFile()
     {
+        if(iCalFile == null)
+            return false;
+        
         iCalFile.saveAlarmQueue(q);
+        return true;
     }
     
-    public void loadStateFromActiveFile()
+    public boolean loadStateFromActiveFile()
     {
-        q = iCalFile.loadAlarmQueue();
-        qUpdated = true;
+        if(iCalFile == null)
+            return false;
+        
+        PriorityQueue temp = iCalFile.loadAlarmQueue();
+        
+        if(temp != null)
+        {
+            q = temp;
+            qUpdated = true;
+            return true;
+        }
+        else
+            return false;
     }
     
     public void removeAlarm(int index) throws ArrayIndexOutOfBoundsException, QueueUnderflowException

@@ -254,7 +254,6 @@ public class View implements Observer {
         JFileChooser fileDialog = new JFileChooser();
         
         fileDialog.setFileFilter(new FileNameExtensionFilter("ICalendar File", "ical", "ics", "ifb", "icalendar"));
-        fileDialog.setVisible(true);
         if(fileDialog.showSaveDialog(frame)== JFileChooser.APPROVE_OPTION)
             return fileDialog.getSelectedFile();
         else
@@ -265,7 +264,6 @@ public class View implements Observer {
         JFileChooser fileDialog = new JFileChooser();
         
         fileDialog.setFileFilter(new FileNameExtensionFilter("ICalendar File", "ical", "ics", "ifb", "icalendar"));
-        fileDialog.setVisible(true);
         if(fileDialog.showOpenDialog(frame)== JFileChooser.APPROVE_OPTION)
             return fileDialog.getSelectedFile();
         else
