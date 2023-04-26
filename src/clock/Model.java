@@ -53,10 +53,13 @@ public class Model extends Observable {
         qUpdated = true;
     }
     
-    public void setActiveFile(File file)
+    public boolean setActiveFile(File file)
     {
-        if(file != null)
-            iCalFile.setFile(file);
+        if(file == null)
+            return false;
+        
+        iCalFile.setFile(file);
+        return true;
     }
     
     public boolean saveStateToActiveFile()
@@ -64,8 +67,7 @@ public class Model extends Observable {
         if(iCalFile == null)
             return false;
         
-        iCalFile.saveAlarmQueue(q);
-        return true;
+        return iCalFile.saveAlarmQueue(q);
     }
     
     public boolean loadStateFromActiveFile()

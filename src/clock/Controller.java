@@ -86,12 +86,14 @@ public class Controller implements ActionListener {
                 catch(QueueUnderflowException throwaway){}
                 break;
             case "Open":
-                model.setActiveFile(view.showOpenFileDialog());
-                if(!model.loadStateFromActiveFile())
+                if(!model.setActiveFile(view.showOpenFileDialog()))
+                    System.out.println("Failed to load file!");
+                else if(!model.loadStateFromActiveFile())
                     System.out.println("Failed to load file!");
                 break;
             case "Save as...":
-                model.setActiveFile(view.showSaveFileDialog());
+                if(!model.setActiveFile(view.showSaveFileDialog()))
+                    System.out.println("Failed to save file!");
             case "Save":
                 if(!model.saveStateToActiveFile())
                     System.out.println("Failed to save file!");

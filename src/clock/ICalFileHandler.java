@@ -1,6 +1,7 @@
 package clock;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
@@ -18,20 +19,46 @@ class ICalFileHandler {
     private File file;
     
     
-    void saveAlarmQueue(PriorityQueue queue)
+    boolean saveAlarmQueue(PriorityQueue queue)
     {
         if(file == null)
-            return;
-        
-        if(file.exists())
+            return false;
+        try
         {
-            
+            FileWriter writer = new FileWriter(file.toString());
+            writer.write("BEGIN:VCALENDAR\r\n");
+            writer.write("VERSION:2.0\r\n");
+            writer.write("PRODID:-//cll-ass2//NONSGML clock v1.0//EN");
+            for(int i = 0; i < queue.getCount(); i++)
+            {
+                Calendar time = queue.get(i).getAlarmTime();
+                
+                String year = Integer.toString(time.get(Calendar.YEAR));
+                String month = String.format("%02d", time.get(Calendar.MONTH) + 1);
+                String day = String.format("%02d", time.get(Calendar.DAY_OF_MONTH));
+                
+                String hour = String.format("%02d", time.get(Calendar.HOUR_OF_DAY));
+                String min = String.format("%02d", time.get(Calendar.MINUTE));
+                String sec = String.format("%02d", time.get(Calendar.SECOND));
+                
+                String DTStamp = year + month + day + 'T' + hour + min + sec;
+                
+                writer.write("\r\nBEGIN:VEVENT\r\n");
+                writer.write("DTSTAMP:" + DTStamp + "\r\n");
+                writer.write("SUMMARY:" + queue.get(i).getMessage() + "\r\n");
+                writer.write("METHOD:ALARM\r\n");
+                writer.write("UID:" + DTStamp + "-clock@cll-" + i + "\r\n");
+                writer.write("DTSTART:" + DTStamp + "\r\n");
+                writer.write("TRANSP:TRANSPARENT\r\n");
+                writer.write("END:VEVENT");
+            }
+            writer.close();
         }
-        else
+        catch(IOException e)
         {
-            
+            return false;
         }
-        //Write File
+        return true;
     }
     
     PriorityQueue loadAlarmQueue()

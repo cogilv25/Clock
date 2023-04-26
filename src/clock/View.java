@@ -139,6 +139,7 @@ public class View implements Observer {
         alarmEditorPanel = new JPanel(new GridBagLayout());
         listModel = new DefaultListModel();
         alarmEditorList = new JList(listModel);
+        alarmEditorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         alarmEditorPane = new JScrollPane(alarmEditorList);
         
         GridBagConstraints gbc = new GridBagConstraints();
