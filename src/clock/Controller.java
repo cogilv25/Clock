@@ -10,7 +10,7 @@ import javax.swing.Timer;
  * 
  * view.showThing(model.doThing());                                           */
 
-public class Controller implements ActionListener {
+public class Controller extends WindowAdapter implements ActionListener {
     Timer timer;
     
     Model model;
@@ -26,8 +26,60 @@ public class Controller implements ActionListener {
         timer = new Timer(100, this);
         timer.setActionCommand("clockTimer");
         timer.start();
+        
+        //Ask the User if they want to open a file and open it if so
+        if(!view.promptYesNo("Would you like to open a file?"))
+            return;
+        
+        File file = view.showOpenFileDialog();
+        if(file == null)
+            return;
+        
+        model.setActiveFile(file);
+        if(!model.loadStateFromActiveFile())
+            view.displayPopupBox("Failed to open the file provided! Please try "
+                    + "again or select another file");
     }
 
+    @Override
+    public void windowClosing(WindowEvent e)
+    { 
+        //If there is nothing to save then just exit
+        if(model.isQueueEmpty())
+            System.exit(0);
+        
+        boolean shouldSave = view.promptYesNo("Would you like to save before exiting?");
+        if(!shouldSave)
+            System.exit(0);
+        
+        File file = model.getActiveFile();
+        if(file == null)
+        {
+            file = view.showSaveFileDialog();
+            //If the user clicks cancel we just exit
+            if(file == null)
+                System.exit(0);
+
+            model.setActiveFile(file);    
+        }
+        //Now that we have a file the user wishes to save we loop until we
+        // manage to save a file or the user cancels the operation. This is
+        // due to the fact that fileio fails fairly regularly.
+
+        while(file!=null)
+        {
+            if(!model.saveStateToActiveFile())
+            {
+                view.displayPopupBox("Failed to save the file, please choose another filename");
+                file = view.showSaveFileDialog();
+            }
+            else
+                break;
+        }
+        
+        System.exit(0);
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e)
     {

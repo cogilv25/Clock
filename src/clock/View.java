@@ -74,7 +74,8 @@ public class View implements Observer {
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
         frame.setTitle("Java Clock");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(controller);
         
         // Start of border layout code
         
@@ -250,6 +251,15 @@ public class View implements Observer {
         return alarmEditorList.getSelectedIndex();
     }
     
+    
+    public boolean promptYesNo(String message)
+    {
+        String ObjButtons[] = {"Yes","No"};
+        int PromptResult = JOptionPane.showOptionDialog(null,message,"Clock",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+        
+        return PromptResult==JOptionPane.YES_OPTION;
+    }
+    
     public File showSaveFileDialog()
     {
         JFileChooser fileDialog = new JFileChooser();
@@ -271,6 +281,11 @@ public class View implements Observer {
             return null;
     }
     
+    
+    public void displayPopupBox(String message)
+    {
+        JOptionPane.showMessageDialog(null, message);
+    }
     
     public void update(Observable o, Object arg) {
         

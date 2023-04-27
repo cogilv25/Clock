@@ -119,7 +119,9 @@ class ICalFileHandler {
                         System.out.println(e.getMessage());
                         return null;
                     }
-                    q.add(cal, message);
+                    if(cal.getTimeInMillis() > Calendar.getInstance().getTimeInMillis())
+                        q.add(cal, message);
+                    
                     message = null;
                     DTStamp = null;
                     inEvent = false;
@@ -127,6 +129,11 @@ class ICalFileHandler {
                     
         }
         return q;
+    }
+    
+    File getFile()
+    {
+        return file;
     }
     
     void setFile(File file)

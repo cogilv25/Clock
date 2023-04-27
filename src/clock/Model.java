@@ -32,9 +32,6 @@ public class Model extends Observable {
         q = new PriorityQueue(4);
         iCalFile = new ICalFileHandler();
         update();
-        Calendar temp = Calendar.getInstance();
-        temp.setTimeInMillis(temp.getTimeInMillis() + 2000);
-        addAlarm(temp, "Just a test");
     }
     
     public void addAlarm(Calendar alarmTime, String message)
@@ -62,6 +59,11 @@ public class Model extends Observable {
         return true;
     }
     
+    public File getActiveFile()
+    {
+        return iCalFile.getFile();
+    }
+    
     public boolean saveStateToActiveFile()
     {
         if(iCalFile == null)
@@ -75,7 +77,15 @@ public class Model extends Observable {
         if(iCalFile == null)
             return false;
         
-        PriorityQueue temp = iCalFile.loadAlarmQueue();
+        PriorityQueue temp;
+        try
+        {
+            temp = iCalFile.loadAlarmQueue();
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
         
         if(temp != null)
         {
@@ -109,6 +119,11 @@ public class Model extends Observable {
         {
             //If there are no more alarms in the queue that's fine.
         }
+    }
+    
+    public boolean isQueueEmpty()
+    {
+        return q.isEmpty();
     }
     
     public Alarm getAlarm(int index) throws ArrayIndexOutOfBoundsException
