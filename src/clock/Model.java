@@ -3,10 +3,6 @@ package clock;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-//import javax.swing.JOptionPane;
-//import java.util.GregorianCalendar;
 
 public class Model extends Observable {
     
@@ -51,13 +47,9 @@ public class Model extends Observable {
         qUpdated = true;
     }
     
-    public boolean setActiveFile(File file)
+    public void setActiveFile(File file)
     {
-        if(file == null)
-            return false;
-        
         iCalFile.setFile(file);
-        return true;
     }
     
     public File getActiveFile()

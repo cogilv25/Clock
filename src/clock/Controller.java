@@ -60,7 +60,7 @@ public class Controller extends WindowAdapter implements ActionListener {
             if(file == null)
                 System.exit(0);
 
-            model.setActiveFile(file);    
+            model.setActiveFile(file);
         }
         //Now that we have a file the user wishes to save we loop until we
         // manage to save a file or the user cancels the operation. This is
@@ -97,6 +97,7 @@ public class Controller extends WindowAdapter implements ActionListener {
         System.out.println(e.getActionCommand());
         Alarm alarm;
         File file;
+        
         switch(e.getActionCommand())
         {
             case "Show Alarm Editor...":
@@ -104,30 +105,34 @@ public class Controller extends WindowAdapter implements ActionListener {
                 view.alarmEditorMenuItem.setState(true);
                 view.toggleAlarmEditorVisibility();
                 break;
+                
             case "Hide Alarm Editor...":
                 view.showAlarmEditorItem.setText("Show Alarm Editor...");
                 view.alarmEditorMenuItem.setState(false);
                 view.toggleAlarmEditorVisibility();
                 break;
+                
             case "Alarm Editor":
                 String value = view.alarmEditorMenuItem.getState() ? 
                         "Hide Alarm Editor..." : "Show Alarm Editor...";
                 view.showAlarmEditorItem.setText(value);
                 view.toggleAlarmEditorVisibility();
                 break;
-            case "24h Clock":
-                break;
-            case "Digital Clock":
-                break;
+                
+            case "New":
+                model.setActiveFile(null);
+                
             case "Reset All Alarms":
                 model.resetQueue();
                 break;
+                
             case "Add":
             case "Add Alarm":
                 alarm = view.showAlarmDialog();
                 if(alarm != null)
                     model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
                 break;
+                
             case "Edit":
                 alarm = model.getAlarm(view.getAlarmEditorSelectionIndex());
                 Alarm newAlarm = view.showAlarmDialog(alarm);
@@ -139,30 +144,76 @@ public class Controller extends WindowAdapter implements ActionListener {
                     model.addAlarm(newAlarm.getAlarmTime(), newAlarm.getMessage());
                 }
                 break;
-            case "New":
                 
             case "Remove":
                 int indexToRemove = view.getAlarmEditorSelectionIndex();
-                
-                System.out.println("List Index To Remove: " + indexToRemove);
                 if(indexToRemove < 0)
                     break;
                 
-                try {model.removeAlarm(indexToRemove);}
+                try { model.removeAlarm(indexToRemove); }
                 catch(QueueUnderflowException throwaway){}
                 break;
+                
             case "Open":
-                if(!model.setActiveFile(view.showOpenFileDialog()))
-                    System.out.println("Failed to load file!");
-                else if(!model.loadStateFromActiveFile())
-                    System.out.println("Failed to load file!");
+                file = view.showOpenFileDialog();
+                
+                if(file ==  null)
+                    break;
+                
+                model.setActiveFile(file);
+                if(!model.loadStateFromActiveFile())
+                    view.displayPopupBox("Failed to load file!");
                 break;
+                
             case "Save as...":
-                if(!model.setActiveFile(view.showSaveFileDialog()))
-                    System.out.println("Failed to save file!");
-            case "Save":
+                file = view.showSaveFileDialog();
+                
+                if(file ==  null)
+                    break;
+                model.setActiveFile(file);
+                
                 if(!model.saveStateToActiveFile())
-                    System.out.println("Failed to save file!");
+                    view.displayPopupBox("Failed to save file!");
+                break; 
+                
+            case "Save":
+                if(model.getActiveFile() == null)
+                {
+                    file = view.showSaveFileDialog();
+                    
+                    if(file ==  null)
+                        break;
+                    model.setActiveFile(file);
+                }
+                    
+                if(!model.saveStateToActiveFile())
+                    view.displayPopupBox("Failed to save file!");
+                break;
+                
+            case "Application":
+                view.displayPopupBox(
+                "A simple application that displays a clock,"
+                        + " stores a list of alarms,indicates\n"
+                        
+                + "when an alarm 'expires' and, allows saving,"
+                        + " loading and manipulation of\n"
+                        
+                + "said list of alarms.\n\nVersion : 1.0.0");
+                break;
+                
+            case "Author":
+                view.displayPopupBox(
+                "Name: Calum Lindsay\n"
+                + "Github: github.com/cogilv25\n"
+                + "Contact: 21010093@uhi.ac.uk");
+                break;
+                
+            case "24h Clock":
+                break;
+            case "Digital Clock":
+                view.toggleDigitalAnalogue();
+                break;
+            case "Set Alarm Sound":
                 break;
 
         }

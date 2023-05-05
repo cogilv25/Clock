@@ -2,8 +2,6 @@ package clock;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.nio.file.Path;
 import java.util.Calendar;
 import javax.swing.*;
 import java.util.Observer;
@@ -18,8 +16,8 @@ public class View implements Observer {
     
     AlarmDialog alarmDialog;
     
-    
-    //Indentation used to indicate sub-items
+    //Menu bar menus and items
+    //Indentation is used to indicate submenu items
     JMenu fileMenu;
         JMenuItem newMenuItem;
         JMenuItem openMenuItem;
@@ -28,12 +26,7 @@ public class View implements Observer {
 
     JMenu editMenu;
         JMenuItem addAlarmMenuItem;
-        JMenu editAlarmSubMenu;
-            JMenuItem editAlarmItem1;
-            JMenuItem editAlarmItem2;
-            JMenuItem editAlarmItem3;
-            JMenuItem showAlarmEditorItem;
-            
+        JMenuItem showAlarmEditorItem;
         JMenuItem resetAlarmsMenuItem;
         JMenuItem alarmSoundMenuItem;
 
@@ -60,6 +53,8 @@ public class View implements Observer {
     JFrame frame;
     
     boolean alarmEditorVisible = false;
+    boolean digitalClockDisplayed = false;
+    boolean twentyFourHourMode = false;
     
     public View(Model model) {
         this.model = model;
@@ -122,6 +117,7 @@ public class View implements Observer {
         /* ------------------- Construct View Menu -------------------------- */
         viewMenu = new JMenu("View");
         clock24hMenuItem = new JCheckBoxMenuItem("24h Clock");
+        clock24hMenuItem.setEnabled(digitalClockDisplayed);
         digitalClockMenuItem = new JCheckBoxMenuItem("Digital Clock");
         alarmEditorMenuItem = new JCheckBoxMenuItem("Alarm Editor");
         viewMenu.add(clock24hMenuItem);
@@ -264,7 +260,7 @@ public class View implements Observer {
     public boolean promptYesNo(String message)
     {
         String ObjButtons[] = {"Yes","No"};
-        int PromptResult = JOptionPane.showOptionDialog(null,message,"Clock",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+        int PromptResult = JOptionPane.showOptionDialog(frame,message,"Clock",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
         
         return PromptResult==JOptionPane.YES_OPTION;
     }
@@ -290,10 +286,16 @@ public class View implements Observer {
             return null;
     }
     
+    public void toggleDigitalAnalogue()
+    {
+        digitalClockDisplayed = !digitalClockDisplayed;
+        clock24hMenuItem.setEnabled(digitalClockDisplayed);
+        
+    }
     
     public void displayPopupBox(String message)
     {
-        JOptionPane.showMessageDialog(null, message);
+        JOptionPane.showMessageDialog(frame, message);
     }
     
     public void update(Observable o, Object arg) {

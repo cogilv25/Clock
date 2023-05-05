@@ -1,7 +1,6 @@
 package clock;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.font.*;
 import static java.lang.Float.max;
