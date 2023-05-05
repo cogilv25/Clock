@@ -27,7 +27,7 @@ public class Controller extends WindowAdapter implements ActionListener {
         timer.setActionCommand("clockTimer");
         timer.start();
         
-        //Ask the User if they want to open a file and open it if so
+        //Ask the user if they want to open a file and open it.
         if(!view.promptYesNo("Would you like to open a file?"))
             return;
         
@@ -74,7 +74,9 @@ public class Controller extends WindowAdapter implements ActionListener {
                 file = view.showSaveFileDialog();
             }
             else
+            {
                 break;
+            }
         }
         
         System.exit(0);
@@ -117,6 +119,9 @@ public class Controller extends WindowAdapter implements ActionListener {
                 break;
             case "Digital Clock":
                 break;
+            case "Reset All Alarms":
+                model.resetQueue();
+                break;
             case "Add":
             case "Add Alarm":
                 alarm = view.showAlarmDialog();
@@ -128,13 +133,22 @@ public class Controller extends WindowAdapter implements ActionListener {
                 Alarm newAlarm = view.showAlarmDialog(alarm);
                 if(newAlarm != null)
                 {
-                    alarm.setAlarmTime(newAlarm.getAlarmTime());
-                    alarm.setMessage(newAlarm.getMessage());
-                    model.qUpdated = true;
+                    try{model.removeAlarm(view.getAlarmEditorSelectionIndex());}
+                    catch(Exception throwaway){}
+                    
+                    model.addAlarm(newAlarm.getAlarmTime(), newAlarm.getMessage());
                 }
                 break;
+            case "New":
+                
             case "Remove":
-                try {model.removeAlarm(view.getAlarmEditorSelectionIndex());}
+                int indexToRemove = view.getAlarmEditorSelectionIndex();
+                
+                System.out.println("List Index To Remove: " + indexToRemove);
+                if(indexToRemove < 0)
+                    break;
+                
+                try {model.removeAlarm(indexToRemove);}
                 catch(QueueUnderflowException throwaway){}
                 break;
             case "Open":

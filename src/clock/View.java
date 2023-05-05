@@ -42,7 +42,9 @@ public class View implements Observer {
         JCheckBoxMenuItem digitalClockMenuItem;
         JCheckBoxMenuItem alarmEditorMenuItem;
 
-    JMenuItem aboutMenuItem;
+    JMenu aboutMenu;
+        JMenuItem aboutAppMenuItem;
+        JMenuItem aboutAuthorMenuItem;
     
     // Alarm Editor
     JPanel alarmEditorPanel;
@@ -73,7 +75,7 @@ public class View implements Observer {
         frame.setLayout(new GridLayout(1,1));
         panel = new ClockPanel(model);
         //frame.setContentPane(panel);
-        frame.setTitle("Java Clock");
+        frame.setTitle("Clock");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(controller);
         
@@ -127,9 +129,15 @@ public class View implements Observer {
         viewMenu.add(alarmEditorMenuItem);
         menuBar.add(viewMenu);
         
-        /* Finally add an about menu item to the menubar */
-        aboutMenuItem = new JMenu("About");
-        menuBar.add(aboutMenuItem);
+        /* ------------------- Construct About Menu ------------------------- */
+        
+        
+        aboutMenu = new JMenu("About");
+        aboutAppMenuItem = new JMenuItem("Application");
+        aboutAuthorMenuItem = new JMenuItem("Author");
+        aboutMenu.add(aboutAppMenuItem);
+        aboutMenu.add(aboutAuthorMenuItem);
+        menuBar.add(aboutMenu);
         
         frame.setJMenuBar(menuBar);
         
@@ -185,7 +193,8 @@ public class View implements Observer {
         digitalClockMenuItem.addActionListener(controller);
         alarmEditorMenuItem.addActionListener(controller);
         
-        aboutMenuItem.addActionListener(controller);
+        aboutAppMenuItem.addActionListener(controller);
+        aboutAuthorMenuItem.addActionListener(controller);
         
         button.addActionListener(controller);
         button2.addActionListener(controller);

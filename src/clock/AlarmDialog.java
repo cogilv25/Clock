@@ -53,7 +53,7 @@ public class AlarmDialog
         setTitle("Add or Edit an Alarm");
         setMessageType(JOptionPane.PLAIN_MESSAGE);
         setRootPane(null);
-        setOptions(new String[] { "Apply", "Cancel" });
+        setOptions(new String[] { "Confirm", "Cancel" });
         setOptionSelection(0);
         JPanel panel = new JPanel(new GridBagLayout());
         addComponent(panel);

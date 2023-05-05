@@ -17,6 +17,7 @@ public class ClockPanel extends JPanel {
         setBackground(Color.white);
     }
     
+    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         
@@ -85,7 +86,7 @@ public class ClockPanel extends JPanel {
         {
             gg.setColor(Color.blue);
             gg.setStroke(new BasicStroke(max(0.01f*size,1.5f)));
-            theta = (90 - (model.alarmHour + model.alarmMinute / 60.0) * 30) / (180 / Math.PI);
+            theta = (90 - (model.alarmHour + (model.alarmMinute / 60.0)) * 30) / (180 / Math.PI);
             radius = 0.6 * size;
             x1 = x0 + radius * Math.cos(theta);
             y1 = y0 - radius * Math.sin(theta);

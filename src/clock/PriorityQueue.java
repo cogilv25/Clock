@@ -62,7 +62,7 @@ public class PriorityQueue
         
         /* Scan backwards looking for insertion point */
         int i = tailIndex;
-        while (i > 0 && storage[i - 1].getAlarmTimeInMillis() > alarmTime.getTimeInMillis())
+            while (i > 0 && storage[i - 1].getAlarmTimeInMillis() > alarmTime.getTimeInMillis())
         {
             storage[i] = storage[i - 1];
             i = i - 1;
@@ -91,14 +91,15 @@ public class PriorityQueue
         {
             storage[0] = null;
             tailIndex--;
-        }else if(index < tailIndex){
-            for (int i = index; i <= tailIndex; i++) {
+        }else if(index <= tailIndex){
+            for (int i = index; i < tailIndex; i++) {
                 storage[i] = storage[i + 1];
             }
-            tailIndex --;
+            tailIndex--;
         }
         else
         {
+            System.out.println("Index Was: " + index + " Max Index is: " + tailIndex);
             throw new ArrayIndexOutOfBoundsException();
         }
     }
