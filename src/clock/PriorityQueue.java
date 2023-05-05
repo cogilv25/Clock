@@ -98,10 +98,7 @@ public class PriorityQueue
             tailIndex--;
         }
         else
-        {
-            System.out.println("Index Was: " + index + " Max Index is: " + tailIndex);
             throw new ArrayIndexOutOfBoundsException();
-        }
     }
 
     public boolean isEmpty()

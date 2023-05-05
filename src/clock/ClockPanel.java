@@ -21,20 +21,14 @@ public class ClockPanel extends JPanel {
         super.paintComponent(g);
         
         Rectangle bounds = getBounds();
-        //System.out.println(bounds);
         
         Graphics2D gg = (Graphics2D) g;
         int x0 = bounds.width / 2;
         int y0 = bounds.height / 2;
         
         int size = Math.min(x0, y0);
-        //gg.translate(x0, y0);
-        //gg.scale(size, size);
-        //gg.setStroke(new BasicStroke(0));
         
         gg.setStroke(new BasicStroke(1));
-        
-        // gg.draw(new Ellipse2D.Double(-1, -1, 2, 2));
         
         double radius = 0;
         double theta = 0;
@@ -56,7 +50,6 @@ public class ClockPanel extends JPanel {
         }
         
         // Draw the numbers
-        // Font font = new Font("SansSerif", Font.BOLD, size / 5);
         Font font = new Font("SansSerif", Font.PLAIN, size / 5);
         gg.setFont(font);
         for (int n = 1; n <= 12; n++) {

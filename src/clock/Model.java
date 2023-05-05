@@ -39,11 +39,8 @@ public class Model extends Observable {
             alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
             alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
         }
-        catch(QueueUnderflowException e)
-        {
-            //This shoud be impossible, so we will log if it happens.
-            System.out.println("After adding an alarm there was no alarm in the queue");
-        }
+        catch(Exception ignoreExceptions){}
+        
         qUpdated = true;
     }
     
@@ -89,7 +86,7 @@ public class Model extends Observable {
                 alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
                 alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
             }
-            catch(QueueUnderflowException ignore){}
+            catch(Exception ignoreExceptions){}
             
             qUpdated = true;
             return true;
@@ -100,7 +97,6 @@ public class Model extends Observable {
     
     public void removeAlarm(int index) throws ArrayIndexOutOfBoundsException, QueueUnderflowException
     {
-        System.out.println("Index to remove again: " + index);
         q.remove(index);
         qUpdated = true;
         //Update alarmHour & alarmMinute
@@ -117,10 +113,7 @@ public class Model extends Observable {
             alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
             alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
         }
-        catch(QueueUnderflowException e)
-        {
-            //If there are no more alarms in the queue that's fine.
-        }
+        catch(Exception ignoreExceptions){}
     }
     
     public boolean isQueueEmpty()
@@ -153,20 +146,11 @@ public class Model extends Observable {
                 if(date.getTimeInMillis() > q.head().getAlarmTimeInMillis())
                 {
                     activatedAlarm = q.head();
-                    try{
                     removeAlarm(0);
-                    }
-                    catch(QueueUnderflowException | ArrayIndexOutOfBoundsException e)
-                    {
-                        //If there are no more alarms in the queue that's fine.
-                    }
                 }
         } 
-        catch (QueueUnderflowException | ArrayIndexOutOfBoundsException ex)
-        {
-            //This shoud be impossible, so we will log if it happens.
-            System.out.println("Queue.head() Exception when Queue not empty");
-        }
+        catch (Exception ignoreException){}
+        
         hour = date.get(Calendar.HOUR);
         minute = date.get(Calendar.MINUTE);
         oldSecond = second;

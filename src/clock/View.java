@@ -165,8 +165,7 @@ public class View implements Observer {
          *
          * https://docs.oracle.com/javase/tutorial/uiswing/layout/group.html
          * https://docs.oracle.com/javase/8/docs/api/javax/swing/GroupLayout.Alignment.html
-         * https://stackoverflow.com/questions/30863960/adding-a-scroll-pane-to-gridbaglayout
-        */
+         * https://stackoverflow.com/questions/30863960/adding-a-scroll-pane-to-gridbaglayout */
         
         alarmEditorLayout.setHorizontalGroup(
             alarmEditorLayout.createParallelGroup(GroupLayout.Alignment.CENTER)

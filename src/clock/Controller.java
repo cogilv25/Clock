@@ -94,7 +94,6 @@ public class Controller extends WindowAdapter implements ActionListener {
             return;
         }
         
-        System.out.println(e.getActionCommand());
         Alarm alarm;
         File file;
         

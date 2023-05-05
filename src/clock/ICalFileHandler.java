@@ -76,7 +76,6 @@ class ICalFileHandler {
         }
         catch(IOException e)
         {
-            System.out.println("IOEXCEPTION");
             return null;
         }
         
@@ -116,7 +115,6 @@ class ICalFileHandler {
                     } 
                     catch (ParseException e) 
                     {
-                        System.out.println(e.getMessage());
                         return null;
                     }
                     if(cal.getTimeInMillis() > Calendar.getInstance().getTimeInMillis())
