@@ -56,6 +56,9 @@ public class View implements Observer {
     boolean digitalClockDisplayed = false;
     boolean twentyFourHourMode = false;
     
+    int minWidth;
+    int minHeight;
+    
     public View(Model model) {
         this.model = model;
     }
@@ -137,40 +140,59 @@ public class View implements Observer {
         
         frame.setJMenuBar(menuBar);
         
+        pane.add(panel);
+        
         /* ----------------- Construct Alarm Editor ------------------------- */
         button = new JButton("Add");
         button2 = new JButton("Edit");
         button3 = new JButton("Remove");
-        alarmEditorPanel = new JPanel(new GridBagLayout());
         listModel = new DefaultListModel();
         alarmEditorList = new JList(listModel);
         alarmEditorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         alarmEditorPane = new JScrollPane(alarmEditorList);
         
-        GridBagConstraints gbc = new GridBagConstraints();
+        alarmEditorPanel = new JPanel();
+        GroupLayout alarmEditorLayout = new GroupLayout(alarmEditorPanel);
+        alarmEditorPanel.setLayout(alarmEditorLayout);
+                
+        alarmEditorLayout.setAutoCreateGaps(true);
+        alarmEditorLayout.setAutoCreateContainerGaps(true);
         
-        gbc.gridx = 0; gbc.gridy = 0;
-        gbc.gridwidth = 3; gbc.gridheight = 1;
-        gbc.weighty = 0.8; gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
+        /* The layout for the alarm editor proved to be a major pain to figure
+         * out, however once you get a handle on it the GroupLayout Manager is 
+         * actually pretty nice to use if not so easy to look at. Here are 3
+         * good resources:
+         *
+         * https://docs.oracle.com/javase/tutorial/uiswing/layout/group.html
+         * https://docs.oracle.com/javase/8/docs/api/javax/swing/GroupLayout.Alignment.html
+         * https://stackoverflow.com/questions/30863960/adding-a-scroll-pane-to-gridbaglayout
+        */
+        
+        alarmEditorLayout.setHorizontalGroup(
+            alarmEditorLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                    
+                .addComponent(alarmEditorPane)
+                
+                .addGroup( alarmEditorLayout.createSequentialGroup()
+                    .addComponent(button)
+                    .addComponent(button2)
+                    .addComponent(button3)
+                )
+        );
+        
+        alarmEditorLayout.setVerticalGroup(
+            alarmEditorLayout.createSequentialGroup()
+                    
+                .addComponent(alarmEditorPane).
+                    
+                addGroup( alarmEditorLayout.createParallelGroup()
+                    .addComponent(button)
+                    .addComponent(button2)
+                    .addComponent(button3)
+                )
+        );
+        
         alarmEditorPanel.add(alarmEditorPane);
-        
-        
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-        gbc.weighty = 0.2;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        alarmEditorPanel.add(button, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        alarmEditorPanel.add(button2, gbc);
-        
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        alarmEditorPanel.add(button3, gbc);
         
         /* ---- Set controller as the action listener for all menu items ---- */
         
@@ -196,12 +218,17 @@ public class View implements Observer {
         button2.addActionListener(controller);
         button3.addActionListener(controller);
         
-         
-        panel.setPreferredSize(new Dimension(200, 200));
-        frame.setBounds(500, 500, 200, 200);
-        pane.add(panel);
         
-        // End of borderlayout code
+        Insets insets = frame.getInsets();
+        minWidth = (button.getMinimumSize().width + button2.getMinimumSize().width
+            + button3.getMinimumSize().width + 30);
+        minHeight = minWidth + insets.top + insets.bottom;
+         
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        
+        frame.setBounds(screenSize.width/2 - 250, screenSize.height/2 - 250, 500, 500);
+        frame.setMinimumSize(new Dimension(minWidth, minHeight));
+        frame.setPreferredSize(new Dimension(500,500));
         
         frame.pack();
         frame.setVisible(true);
@@ -225,9 +252,17 @@ public class View implements Observer {
         }
         
         alarmEditorVisible = ! alarmEditorVisible;
-        frame.setMinimumSize(frame.getSize());
+        
+        /* Calculate the minimum width dependant on whether or not the alarm
+         * editor is visible. */
+        Insets insets = frame.getInsets();
+        int actualMinWidth = insets.left + insets.right
+                + (alarmEditorVisible ? minWidth * 2 : minWidth);
+        
+        //Maintain current window size as long as it is >= the minimum size.
+        frame.setPreferredSize(frame.getSize());
+        frame.setMinimumSize(new Dimension(actualMinWidth, minHeight));
         frame.pack();
-        frame.setMinimumSize(null);
     }
     
     public Alarm showAlarmDialog()
