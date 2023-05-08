@@ -2,9 +2,8 @@ package clock;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Observable;
 
-public class Model extends Observable {
+public class Model{
     
     int hour = 0;
     int minute = 0;
@@ -12,10 +11,10 @@ public class Model extends Observable {
     
     int oldSecond = 0;
     
-    //The alarm that is currently activated or "ringing" otherwise null.
+    //The alarm that is currently "ringing" otherwise null.
     Alarm activatedAlarm = null;
-    int alarmHour = 0;
-    int alarmMinute = 0;
+    int alarmHour = -1;
+    int alarmMinute;
     
     ICalFileHandler iCalFile;
     
@@ -30,6 +29,11 @@ public class Model extends Observable {
         update();
     }
     
+    public boolean timeUpdated()
+    {
+        return oldSecond != second;
+    }
+    
     public void addAlarm(Calendar alarmTime, String message)
     {
         q.add(alarmTime, message);
@@ -39,6 +43,7 @@ public class Model extends Observable {
             alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
             alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
         }
+        //An exception here is theoretically impossible
         catch(Exception ignoreExceptions){}
         
         qUpdated = true;
@@ -113,12 +118,30 @@ public class Model extends Observable {
             alarmHour = q.head().getAlarmTime().get(Calendar.HOUR);
             alarmMinute = q.head().getAlarmTime().get(Calendar.MINUTE);
         }
-        catch(Exception ignoreExceptions){}
+        catch(Exception e)
+        {
+            //If there was an exception then the queue is empty
+        }
+    }
+    
+    public int getAlarmHour()
+    {
+        return alarmHour;
+    }
+    
+    public int getAlarmMinute()
+    {
+        return alarmMinute;
     }
     
     public boolean isQueueEmpty()
     {
         return q.isEmpty();
+    }
+    
+    public int getQueueCount()
+    {
+        return q.getCount();
     }
     
     public Alarm getAlarm(int index) throws ArrayIndexOutOfBoundsException
@@ -135,6 +158,7 @@ public class Model extends Observable {
     {
         q = new PriorityQueue(4);
         qUpdated = true;
+        alarmHour = -1;
     }
     
     public void update()
@@ -155,10 +179,10 @@ public class Model extends Observable {
         minute = date.get(Calendar.MINUTE);
         oldSecond = second;
         second = date.get(Calendar.SECOND);
-        if (oldSecond != second)
+        /*if (oldSecond != second)
         {
             setChanged();
             notifyObservers();
-        }
+        }*/
     }
 }

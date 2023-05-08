@@ -5,10 +5,10 @@ public class Clock {
     public static void main(String[] args)
     {
         Model model = new Model();
-        View view = new View(model);
-        model.addObserver(view);
+        View view = new View();
+        
         Controller controller = new Controller(model, view);
-        view.init(controller);
+        
         controller.begin();
     }
 }

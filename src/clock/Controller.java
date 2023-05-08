@@ -23,12 +23,14 @@ public class Controller extends WindowAdapter implements ActionListener {
     
     public void begin()
     {
+        view.initializeCallbacks(this);
+        
         timer = new Timer(100, this);
         timer.setActionCommand("clockTimer");
         timer.start();
         
         //Ask the user if they want to open a file and open it.
-        if(!view.promptYesNo("Would you like to open a file?"))
+        if(!view.showYesNoDialog("Would you like to open a file?"))
             return;
         
         File file = view.showOpenFileDialog();
@@ -39,6 +41,8 @@ public class Controller extends WindowAdapter implements ActionListener {
         if(!model.loadStateFromActiveFile())
             view.displayPopupBox("Failed to open the file provided! Please try "
                     + "again or select another file");
+        
+        view.updateAlarmHand(model.alarmHour, model.alarmMinute);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class Controller extends WindowAdapter implements ActionListener {
         if(model.isQueueEmpty())
             System.exit(0);
         
-        boolean shouldSave = view.promptYesNo("Would you like to save before exiting?");
+        boolean shouldSave = view.showYesNoDialog("Would you like to save before exiting?");
         if(!shouldSave)
             System.exit(0);
         
@@ -85,51 +89,50 @@ public class Controller extends WindowAdapter implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        String command = e.getActionCommand();
-        
-        //Speculative optimization to exit early on hot path.
-        if(command.equals("clockTimer"))
-        {
-            model.update();
-            return;
-        }
         
         Alarm alarm;
         File file;
-        
         switch(e.getActionCommand())
         {
+            case "clockTimer":
+                model.update();
+                if(model.timeUpdated())
+                {
+                    view.updateTime(model.hour, model.minute, model.second);
+                }
+                if(model.qUpdated)
+                {
+                    view.updateAlarmEditor(model.q);
+                }
+                if(model.activatedAlarm != null)
+                {
+                    view.displayPopupBox(model.activatedAlarm.getMessage());
+                    model.stopActivatedAlarm();
+                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                }
+                break;
+                
             case "Show Alarm Editor...":
-                view.showAlarmEditorItem.setText("Hide Alarm Editor...");
-                view.alarmEditorMenuItem.setState(true);
-                view.toggleAlarmEditorVisibility();
-                break;
-                
             case "Hide Alarm Editor...":
-                view.showAlarmEditorItem.setText("Show Alarm Editor...");
-                view.alarmEditorMenuItem.setState(false);
-                view.toggleAlarmEditorVisibility();
-                break;
-                
             case "Alarm Editor":
-                String value = view.alarmEditorMenuItem.getState() ? 
-                        "Hide Alarm Editor..." : "Show Alarm Editor...";
-                view.showAlarmEditorItem.setText(value);
                 view.toggleAlarmEditorVisibility();
                 break;
                 
             case "New":
                 model.setActiveFile(null);
-                
             case "Reset All Alarms":
                 model.resetQueue();
+                view.updateAlarmHand(model.alarmHour, model.alarmMinute);
                 break;
                 
             case "Add":
             case "Add Alarm":
                 alarm = view.showAlarmDialog();
                 if(alarm != null)
+                {
                     model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
+                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                }
                 break;
                 
             case "Edit":
@@ -141,6 +144,8 @@ public class Controller extends WindowAdapter implements ActionListener {
                     catch(Exception throwaway){}
                     
                     model.addAlarm(newAlarm.getAlarmTime(), newAlarm.getMessage());
+                    view.updateAlarmEditor(model.q);
+                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
                 }
                 break;
                 
@@ -150,7 +155,9 @@ public class Controller extends WindowAdapter implements ActionListener {
                     break;
                 
                 try { model.removeAlarm(indexToRemove); }
-                catch(QueueUnderflowException throwaway){}
+                catch(QueueUnderflowException throwaway){ break; }
+                
+                view.updateAlarmHand(model.alarmHour, model.alarmMinute);
                 break;
                 
             case "Open":
@@ -162,6 +169,8 @@ public class Controller extends WindowAdapter implements ActionListener {
                 model.setActiveFile(file);
                 if(!model.loadStateFromActiveFile())
                     view.displayPopupBox("Failed to load file!");
+                else
+                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
                 break;
                 
             case "Save as...":

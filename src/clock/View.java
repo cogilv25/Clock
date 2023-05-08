@@ -4,17 +4,14 @@ import java.awt.*;
 import java.io.File;
 import java.util.Calendar;
 import javax.swing.*;
-import java.util.Observer;
-import java.util.Observable;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class View implements Observer {
+public class View{
     
+    JFrame frame;
     ClockPanel panel;
-    Controller controller;
-    Model model;
-    
     AlarmDialog alarmDialog;
+    DefaultListModel listModel;
     
     //Menu bar menus and items
     //Indentation is used to indicate submenu items
@@ -48,46 +45,29 @@ public class View implements Observer {
         JButton button3;
     
     // Internal
-    DefaultListModel listModel;
-    
-    JFrame frame;
     
     boolean alarmEditorVisible = false;
+    
+    int minWidth;
+    int minWidthNoAlarmEditor;
+    int minHeight;
+    
+    //No JavaDocs as these are unimplemented
     boolean digitalClockDisplayed = false;
     boolean twentyFourHourMode = false;
     
-    int minWidth;
-    int minHeight;
-    
-    public View(Model model) {
-        this.model = model;
-    }
-    
-    public void init(Controller controller)
+    public View()
     {
-        this.controller = controller;
         
         alarmDialog = new AlarmDialog();
         
         frame = new JFrame();
         frame.setLayout(new GridLayout(1,1));
-        panel = new ClockPanel(model);
-        //frame.setContentPane(panel);
+        panel = new ClockPanel();
+        
         frame.setTitle("Clock");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(controller);
         
-        // Start of border layout code
-        
-        // I've just put a single button in each of the border positions:
-        // PAGE_START (i.e. top), PAGE_END (bottom), LINE_START (left) and
-        // LINE_END (right). You can omit any of these, or replace the button
-        // with something else like a label or a menu bar. Or maybe you can
-        // figure out how to pack more than one thing into one of those
-        // positions. This is the very simplest border layout possible, just
-        // to help you get started.
-        
-        Container pane = frame.getContentPane();
         
         /* -------------------- Construct Menu Bar -------------------------- */
         JMenuBar menuBar = new JMenuBar();
@@ -140,7 +120,7 @@ public class View implements Observer {
         
         frame.setJMenuBar(menuBar);
         
-        pane.add(panel);
+        frame.getContentPane().add(panel);
         
         /* ----------------- Construct Alarm Editor ------------------------- */
         button = new JButton("Add");
@@ -182,19 +162,47 @@ public class View implements Observer {
         alarmEditorLayout.setVerticalGroup(
             alarmEditorLayout.createSequentialGroup()
                     
-                .addComponent(alarmEditorPane).
+                .addComponent(alarmEditorPane)
                     
-                addGroup( alarmEditorLayout.createParallelGroup()
+                .addGroup( alarmEditorLayout.createParallelGroup()
                     .addComponent(button)
                     .addComponent(button2)
                     .addComponent(button3)
                 )
         );
-        
         alarmEditorPanel.add(alarmEditorPane);
         
-        /* ---- Set controller as the action listener for all menu items ---- */
+        /* ----------------- Calculate Minimum Sizes ------------------------ */
         
+        Insets insets = frame.getInsets();
+        
+        // The magic numbers are to create slightly more padding where desired.
+        
+        minWidthNoAlarmEditor = (button.getMinimumSize().width + 
+            button2.getMinimumSize().width + button3.getMinimumSize().width + 40);
+        minWidth = minWidthNoAlarmEditor * 2;
+        
+        minHeight = minWidthNoAlarmEditor + insets.top + insets.bottom + 55;
+        
+        minWidth += insets.left + insets.right;
+        minWidthNoAlarmEditor += insets.left + insets.right;
+        
+        /* ----------------- Centre Window on Screen ------------------------ */
+         
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        
+        frame.setBounds(screenSize.width / 2 - 250, screenSize.height / 2 - 250,
+                500, 500);
+        frame.setMinimumSize(new Dimension(minWidthNoAlarmEditor, minHeight));
+        frame.setPreferredSize(new Dimension(500, 500));
+        
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
+    public void initializeCallbacks(Controller controller)
+    {
+        frame.addWindowListener(controller);
         
         newMenuItem.addActionListener(controller);
         openMenuItem.addActionListener(controller);
@@ -216,34 +224,21 @@ public class View implements Observer {
         button.addActionListener(controller);
         button2.addActionListener(controller);
         button3.addActionListener(controller);
-        
-        
-        Insets insets = frame.getInsets();
-        minWidth = (button.getMinimumSize().width + button2.getMinimumSize().width
-            + button3.getMinimumSize().width + 30);
-        minHeight = minWidth + insets.top + insets.bottom;
-         
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        
-        frame.setBounds(screenSize.width/2 - 250, screenSize.height/2 - 250, 500, 500);
-        frame.setMinimumSize(new Dimension(minWidth, minHeight));
-        frame.setPreferredSize(new Dimension(500,500));
-        
-        frame.pack();
-        frame.setVisible(true);
     }
     
     public void toggleAlarmEditorVisibility()
     {
-        Container pane = frame.getContentPane();
         
+        Container pane = frame.getContentPane();
         if(alarmEditorVisible)
         {
+            showAlarmEditorItem.setText("Show Alarm Editor..."); 
             pane.remove(alarmEditorPanel);
             frame.setLayout(new GridLayout(1,1));
         }
         else
         {
+            showAlarmEditorItem.setText("Hide Alarm Editor...");
             pane.remove(panel);
             frame.setLayout(new GridLayout(1,2));
             pane.add(alarmEditorPanel);
@@ -251,12 +246,11 @@ public class View implements Observer {
         }
         
         alarmEditorVisible = ! alarmEditorVisible;
+        alarmEditorMenuItem.setState(alarmEditorVisible);
         
-        /* Calculate the minimum width dependant on whether or not the alarm
-         * editor is visible. */
-        Insets insets = frame.getInsets();
-        int actualMinWidth = insets.left + insets.right
-                + (alarmEditorVisible ? minWidth * 2 : minWidth);
+        /* Get the minimum width dependant on whether or not the alarm editor
+         * is visible. */
+        int actualMinWidth = alarmEditorVisible ? minWidth: minWidthNoAlarmEditor;
         
         //Maintain current window size as long as it is >= the minimum size.
         frame.setPreferredSize(frame.getSize());
@@ -275,56 +269,62 @@ public class View implements Observer {
     
     public Alarm showAlarmDialog(Alarm alarmToEdit)
     {
+        //Prepare the dialog then display it.
         alarmDialog.setAlarm(alarmToEdit);
-        
         int selection = alarmDialog.show();
         
-        if(selection == JOptionPane.OK_OPTION)
-            return alarmDialog.getAlarm();
-        else
+        //If the user clicks cancel return null.
+        if(selection != JOptionPane.OK_OPTION)
             return null;
-    }
-    
-    public int getAlarmEditorSelectionIndex()
-    {
-        return alarmEditorList.getSelectedIndex();
+        
+        return alarmDialog.getAlarm();
     }
     
     
-    public boolean promptYesNo(String message)
+    /**
+     * Show a dialog displaying the message provided with a yes and no option.
+     * 
+     * @param message
+     * @return true if Yes option was selected.
+     */
+    public boolean showYesNoDialog(String message)
     {
         String ObjButtons[] = {"Yes","No"};
-        int PromptResult = JOptionPane.showOptionDialog(frame,message,"Clock",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+        int result = JOptionPane.showOptionDialog(frame, message, "Clock",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+            ObjButtons, ObjButtons[1]
+        );
         
-        return PromptResult==JOptionPane.YES_OPTION;
+        return result == JOptionPane.YES_OPTION;
     }
     
     public File showSaveFileDialog()
     {
         JFileChooser fileDialog = new JFileChooser();
+        fileDialog.setFileFilter(
+            new FileNameExtensionFilter(
+                "ICalendar File", "ical", "ics", "ifb", "icalendar"
+        ));
         
-        fileDialog.setFileFilter(new FileNameExtensionFilter("ICalendar File", "ical", "ics", "ifb", "icalendar"));
-        if(fileDialog.showSaveDialog(frame)== JFileChooser.APPROVE_OPTION)
-            return fileDialog.getSelectedFile();
-        else
+        //Return null if the user cancels the operation.
+        if(fileDialog.showSaveDialog(frame)!= JFileChooser.APPROVE_OPTION)
             return null;
+        
+        return fileDialog.getSelectedFile();
     }
     public File showOpenFileDialog()
     {
         JFileChooser fileDialog = new JFileChooser();
+        fileDialog.setFileFilter(
+            new FileNameExtensionFilter(
+                "ICalendar File", "ical", "ics", "ifb", "icalendar"
+        ));
         
-        fileDialog.setFileFilter(new FileNameExtensionFilter("ICalendar File", "ical", "ics", "ifb", "icalendar"));
-        if(fileDialog.showOpenDialog(frame)== JFileChooser.APPROVE_OPTION)
-            return fileDialog.getSelectedFile();
-        else
+        //Return null if the user cancels the operation.
+        if(fileDialog.showOpenDialog(frame)!= JFileChooser.APPROVE_OPTION)
             return null;
-    }
-    
-    public void toggleDigitalAnalogue()
-    {
-        digitalClockDisplayed = !digitalClockDisplayed;
-        clock24hMenuItem.setEnabled(digitalClockDisplayed);
         
+        return fileDialog.getSelectedFile();
     }
     
     public void displayPopupBox(String message)
@@ -332,24 +332,39 @@ public class View implements Observer {
         JOptionPane.showMessageDialog(frame, message);
     }
     
-    public void update(Observable o, Object arg) {
-        
+     public int getAlarmEditorSelectionIndex()
+    {
+        return alarmEditorList.getSelectedIndex();
+    }
+    
+    //No JavaDocs as the method does not currently do anything except flip the
+    //state of some booleans.
+    public void toggleDigitalAnalogue()
+    {
+        digitalClockDisplayed = !digitalClockDisplayed;
+        clock24hMenuItem.setEnabled(digitalClockDisplayed);
+    }
+    
+    public void updateAlarmEditor(PriorityQueue q)
+    {
         int preserveSelection = alarmEditorList.getSelectedIndex();
-        if(model.qUpdated)
-        {
-            listModel.clear();
-            for(int i = 0; i < model.q.getCount(); i++)
-            {
-                listModel.add(i,model.q.get(i).toString());
-            }
-            model.qUpdated = false;
-        }
-        panel.repaint();
+        
+        listModel.clear();
+        for(int i = 0; i < q.getCount(); i++)
+            listModel.add(i, q.get(i).toString());
+        
         alarmEditorList.setSelectedIndex(preserveSelection);
-        if(model.activatedAlarm != null)
-        {
-            JOptionPane.showMessageDialog(null, model.activatedAlarm.getMessage());
-            model.activatedAlarm = null;
-        }
+    }
+    
+    public void updateAlarmHand(int alarmHour, int alarmMinute)
+    {
+        panel.setAlarmTime(alarmHour, alarmMinute);
+        panel.repaint();
+    }
+            
+    public void updateTime(int hour, int minute, int second)
+    {
+        panel.setTime(hour, minute, second);
+        panel.repaint();
     }
 }

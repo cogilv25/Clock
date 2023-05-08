@@ -24,12 +24,9 @@ public class AlarmDialog
     private SpinnerModel hourSpinnerModel;
     private SpinnerModel minuteSpinnerModel;
     private SpinnerModel secondSpinnerModel;
-
-    private String title;
-    private int messageType;
-    private JRootPane rootPane;
+    
+    private JRootPane parent;
     private String[] options;
-    private int optionIndex;
 
     public AlarmDialog()
     {
@@ -50,13 +47,9 @@ public class AlarmDialog
             now.get(Calendar.SECOND),
             0, 59, 1);
         
-        setTitle("Add or Edit an Alarm");
-        setMessageType(JOptionPane.PLAIN_MESSAGE);
-        setRootPane(null);
-        setOptions(new String[] { "Confirm", "Cancel" });
-        setOptionSelection(0);
+        options = new String[] { "Confirm", "Cancel" };
         JPanel panel = new JPanel(new GridBagLayout());
-        addComponent(panel);
+        components.add(panel);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1.0;
         gbc.weighty = .25;
@@ -108,62 +101,20 @@ public class AlarmDialog
         return new Alarm(alarmMessage.getText(), alarmTime);
     }
 
-    public void setTitle(String title)
+    public void setParent(JRootPane rootPane)
     {
-        this.title = title;
-    }
-
-    public void setMessageType(int messageType)
-    {
-        this.messageType = messageType;
-    }
-
-    public void addComponent(JComponent component)
-    {
-        components.add(component);
-    }
-
-    public void addMessageText(String messageText)
-    {
-        JLabel label = new JLabel("<html>" + messageText + "</html>");
-
-        components.add(label);
-    }
-
-    public void setRootPane(JRootPane rootPane)
-    {
-        this.rootPane = rootPane;
-    }
-
-    public void setOptions(String[] options)
-    {
-        this.options = options;
-    }
-
-    public void setOptionSelection(int optionIndex)
-    {
-        this.optionIndex = optionIndex;
+        this.parent = rootPane;
     }
 
     public int show()
     {
         int optionType = JOptionPane.OK_CANCEL_OPTION;
-        Object optionSelection = null;
+        Object optionSelection = options[0];
 
-        if(options.length != 0)
-        {
-            optionSelection = options[optionIndex];
-        }
-
-        int selection = JOptionPane.showOptionDialog(rootPane,
-                components.toArray(), title, optionType, messageType, null,
-                options, optionSelection);
+        int selection = JOptionPane.showOptionDialog(parent,
+            components.toArray(), "Add or Edit an Alarm", optionType,
+            JOptionPane.PLAIN_MESSAGE, null, options, optionSelection);
 
         return selection;
-    }
-
-    public static String getLineBreak()
-    {
-        return "<br>";
     }
 }

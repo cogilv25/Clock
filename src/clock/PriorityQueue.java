@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 /**
  * Implementation of a PriorityQueue to track the alarms and order them by time
- * until expiration. The implementation uses a sorted array internally.
+ * until expiration.
  */
 public class PriorityQueue
 {
