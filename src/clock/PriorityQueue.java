@@ -5,6 +5,8 @@ import java.util.Calendar;
 /**
  * Implementation of a PriorityQueue to track the alarms and order them by time
  * until expiration.
+ * 
+ * @author Calum Lindsay
  */
 public class PriorityQueue
 {
@@ -37,7 +39,13 @@ public class PriorityQueue
         capacity = size;
         tailIndex = -1;
     }
-
+    
+    /**
+     * Get the Alarm stored at the head of the queue.
+     * 
+     * @return The alarm at the head of the queue.
+     * @throws QueueUnderflowException 
+     */
     public Alarm head() throws QueueUnderflowException
     {
         if (isEmpty()) {
@@ -47,6 +55,12 @@ public class PriorityQueue
         }
     }
 
+    /**
+     * Add an Alarm to the queue.
+     * 
+     * @param alarmTime The expiry time of the new alarm.
+     * @param message The message to display to the user when the alarm expires.
+     */
     public void add(Calendar alarmTime, String message)
     {
         tailIndex = tailIndex + 1;
@@ -70,6 +84,13 @@ public class PriorityQueue
         storage[i] = new Alarm(message, alarmTime);
     }
     
+    /**
+     * Get the Alarm stored at the provided index in the queue.
+     * 
+     * @param index The index of the Alarm that will be returned.
+     * @return The Alarm at the index requested.
+     * @throws ArrayIndexOutOfBoundsException 
+     */
     public Alarm get(int index) throws ArrayIndexOutOfBoundsException
     {
         if(index < 0 || index > tailIndex)
@@ -78,11 +99,23 @@ public class PriorityQueue
         return storage[index];
     }
     
+    /**
+     * Get the number of Alarms stored in the queue.
+     * 
+     * @return The number of Alarms stored in the queue.
+     */
     public int getCount()
     {
         return tailIndex+1;
     }
-
+    
+    /**
+     * Remove the Alarm stored at the index provided from the queue.
+     * 
+     * @param index The index of the Alarm to be removed.
+     * @throws QueueUnderflowException
+     * @throws ArrayIndexOutOfBoundsException 
+     */
     public void remove(int index) throws QueueUnderflowException, ArrayIndexOutOfBoundsException
     {
         if (isEmpty()) {
@@ -101,11 +134,21 @@ public class PriorityQueue
             throw new ArrayIndexOutOfBoundsException();
     }
 
+    /**
+     * Get whether the queue is empty.
+     * 
+     * @return True if the queue is empty
+     */
     public boolean isEmpty()
     {
         return tailIndex < 0;
     }
 
+    /**
+     * Get a String representation of the queue.
+     * 
+     * @return a String representing the queue.
+     */
     @Override
     public String toString()
     {

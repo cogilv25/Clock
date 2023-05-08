@@ -4,58 +4,186 @@ import java.awt.*;
 import java.io.File;
 import java.util.Calendar;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
+
+/**
+ * The View part of the MVC architecture. Performs all actions to do with the
+ * user interface.
+ * 
+ * @author Calum Lindsay
+ */
 public class View{
     
-    JFrame frame;
-    ClockPanel panel;
-    AlarmDialog alarmDialog;
-    DefaultListModel listModel;
+    /**
+     * The JFrame that holds the main windows components.
+     */
+    private JFrame frame;
+    
+    /**
+     * The ClockPanel instance that draws the clock.
+     */
+    private ClockPanel panel;
+    
+    /**
+     * The AlarmDialog instance that allows the user to add or edit Alarms.
+     */
+    private AlarmDialog alarmDialog;
+    
+    /**
+     * The ListModel that stores the Alarms being displayed in the alarm editor.
+     */
+    private DefaultListModel listModel;
     
     //Menu bar menus and items
     //Indentation is used to indicate submenu items
-    JMenu fileMenu;
-        JMenuItem newMenuItem;
-        JMenuItem openMenuItem;
-        JMenuItem saveMenuItem;
-        JMenuItem saveAsMenuItem;
-
-    JMenu editMenu;
-        JMenuItem addAlarmMenuItem;
-        JMenuItem showAlarmEditorItem;
-        JMenuItem resetAlarmsMenuItem;
-        JMenuItem alarmSoundMenuItem;
-
-    JMenu viewMenu;
-        JCheckBoxMenuItem clock24hMenuItem;
-        JCheckBoxMenuItem digitalClockMenuItem;
-        JCheckBoxMenuItem alarmEditorMenuItem;
-
-    JMenu aboutMenu;
-        JMenuItem aboutAppMenuItem;
-        JMenuItem aboutAuthorMenuItem;
     
-    // Alarm Editor
-    JPanel alarmEditorPanel;
-        JScrollPane alarmEditorPane;
-            JList alarmEditorList;
-        JButton button;
-        JButton button2;
-        JButton button3;
+    /**
+     * The file menu on the menu bar.
+     */
+    private JMenu fileMenu;
+        /**
+         * The new menu item within the file menu.
+         */
+        private JMenuItem newMenuItem;
+        
+        /**
+         * The open menu item within the file menu.
+         */
+        private JMenuItem openMenuItem;
+        
+        /**
+         * The save menu item within the file menu.
+         */
+        private JMenuItem saveMenuItem;
+        
+        /**
+         * The save as menu item within the file menu.
+         */
+        private JMenuItem saveAsMenuItem;
+
+    /**
+     * The edit menu on the menu bar.
+     */
+    private JMenu editMenu;
+        /**
+         * The add alarm menu item within the edit menu.
+         */
+        private JMenuItem addAlarmMenuItem;
+        
+        /**
+         * The show alarm editor menu item within the edit menu. The text of the
+         * menu item toggles to hide alarm editor when the alarm editor is visible.
+         */
+        private JMenuItem showAlarmEditorItem;
+        
+        /**
+         * The reset alarms menu item within the edit menu.
+         */
+        private JMenuItem resetAlarmsMenuItem;
+        
+        /**
+         * The set alarm sound menu item within the edit menu. Unimplemented.
+         */
+        private JMenuItem alarmSoundMenuItem;
+
+    /**
+     * The view menu on the menu bar.
+     */
+    private JMenu viewMenu;
+        /**
+         * The 24h clock toggle-able menu item within the view menu.
+         * Unimplemented.
+         */
+        private JCheckBoxMenuItem clock24hMenuItem;
+        
+        /**
+         * The digital clock toggle-able menu item within the view menu.
+         * Unimplemented.
+         */
+        private JCheckBoxMenuItem digitalClockMenuItem;
+        
+        /**
+         * The alarm editor toggle-able menu item within the view menu.
+         */
+        private JCheckBoxMenuItem alarmEditorMenuItem;
+
+    /**
+     * The about menu on the menu bar.
+     */
+    private JMenu aboutMenu;
+        /**
+         * The application menu item within the about menu.
+         */
+        private JMenuItem aboutAppMenuItem;
+        
+        /**
+         * The author menu item within the about menu.
+         */
+        private JMenuItem aboutAuthorMenuItem;
+    
+    /**
+     * The alarm editor panel.
+     */
+    private JPanel alarmEditorPanel;
+        /**
+         * The scroll pane to make the contained list scroll-able.
+         */
+        private JScrollPane alarmEditorPane;
+            /**
+             * The list within the alarm editor that displays the queue of alarms.
+             */
+            private JList alarmEditorList;
+            
+        /**
+         * The add button within the alarm editor.
+         */
+        private JButton addButton;
+        
+        /**
+         * The edit button within the alarm editor.
+         */
+        private JButton editButton;
+        
+        /**
+         * The remove button within the alarm editor.
+         */
+        private JButton removeButton;
     
     // Internal
     
-    boolean alarmEditorVisible = false;
+    /**
+     * Flag that indicates if the alarm editor is visible.
+     */
+    private boolean alarmEditorVisible = false;
     
-    int minWidth;
-    int minWidthNoAlarmEditor;
-    int minHeight;
+    /**
+     * The minimum width of the window when the alarm editor is visible.
+     */
+    private int minWidth;
     
-    //No JavaDocs as these are unimplemented
-    boolean digitalClockDisplayed = false;
-    boolean twentyFourHourMode = false;
+    /**
+     * The minimum width of the window when the alarm editor is not visible.
+     */
+    private int minWidthNoAlarmEditor;
     
+    /**
+     * The minimum height of the window.
+     */
+    private int minHeight;
+    
+    /**
+     * Unimplemented.
+     */
+    private boolean digitalClockDisplayed = false;
+    
+    /**
+     * Unimplemented.
+     */
+    private boolean twentyFourHourMode = false;
+    
+    /**
+     * Create a new View.
+     */
     public View()
     {
         
@@ -123,9 +251,9 @@ public class View{
         frame.getContentPane().add(panel);
         
         /* ----------------- Construct Alarm Editor ------------------------- */
-        button = new JButton("Add");
-        button2 = new JButton("Edit");
-        button3 = new JButton("Remove");
+        addButton = new JButton("Add");
+        editButton = new JButton("Edit");
+        removeButton = new JButton("Remove");
         listModel = new DefaultListModel();
         alarmEditorList = new JList(listModel);
         alarmEditorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -147,27 +275,25 @@ public class View{
          * https://docs.oracle.com/javase/8/docs/api/javax/swing/GroupLayout.Alignment.html
          * https://stackoverflow.com/questions/30863960/adding-a-scroll-pane-to-gridbaglayout */
         
-        alarmEditorLayout.setHorizontalGroup(
-            alarmEditorLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+        alarmEditorLayout.setHorizontalGroup(alarmEditorLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
                     
                 .addComponent(alarmEditorPane)
                 
-                .addGroup( alarmEditorLayout.createSequentialGroup()
-                    .addComponent(button)
-                    .addComponent(button2)
-                    .addComponent(button3)
+                .addGroup(alarmEditorLayout.createSequentialGroup()
+                    .addComponent(addButton)
+                    .addComponent(editButton)
+                    .addComponent(removeButton)
                 )
         );
         
-        alarmEditorLayout.setVerticalGroup(
-            alarmEditorLayout.createSequentialGroup()
+        alarmEditorLayout.setVerticalGroup(alarmEditorLayout.createSequentialGroup()
                     
                 .addComponent(alarmEditorPane)
                     
-                .addGroup( alarmEditorLayout.createParallelGroup()
-                    .addComponent(button)
-                    .addComponent(button2)
-                    .addComponent(button3)
+                .addGroup(alarmEditorLayout.createParallelGroup()
+                    .addComponent(addButton)
+                    .addComponent(editButton)
+                    .addComponent(removeButton)
                 )
         );
         alarmEditorPanel.add(alarmEditorPane);
@@ -178,8 +304,8 @@ public class View{
         
         // The magic numbers are to create slightly more padding where desired.
         
-        minWidthNoAlarmEditor = (button.getMinimumSize().width + 
-            button2.getMinimumSize().width + button3.getMinimumSize().width + 40);
+        minWidthNoAlarmEditor = (addButton.getMinimumSize().width + 
+            editButton.getMinimumSize().width + removeButton.getMinimumSize().width + 40);
         minWidth = minWidthNoAlarmEditor * 2;
         
         minHeight = minWidthNoAlarmEditor + insets.top + insets.bottom + 55;
@@ -200,6 +326,12 @@ public class View{
         frame.setVisible(true);
     }
     
+    /**
+     * Initializes all the controls in the view to send their events to the
+     * provided controller.
+     * 
+     * @param controller The controller to send events to. 
+     */
     public void initializeCallbacks(Controller controller)
     {
         frame.addWindowListener(controller);
@@ -221,11 +353,15 @@ public class View{
         aboutAppMenuItem.addActionListener(controller);
         aboutAuthorMenuItem.addActionListener(controller);
         
-        button.addActionListener(controller);
-        button2.addActionListener(controller);
-        button3.addActionListener(controller);
+        addButton.addActionListener(controller);
+        editButton.addActionListener(controller);
+        removeButton.addActionListener(controller);
     }
     
+    /**
+     * Toggles the visibility of the alarm editor. Expands the size of the
+     * window if it is below the minimum size when showing the alarm editor.
+     */
     public void toggleAlarmEditorVisibility()
     {
         
@@ -258,6 +394,12 @@ public class View{
         frame.pack();
     }
     
+    /**
+     * Shows a dialog asking the user to specify the parameters for a new alarm.
+     * Returns null if the user clicks cancel.
+     * 
+     * @return The Alarm that the user specified or null.
+     */
     public Alarm showAlarmDialog()
     {
         Calendar timePlusOneHour = Calendar.getInstance();
@@ -267,44 +409,49 @@ public class View{
         return showAlarmDialog(new Alarm("", timePlusOneHour));
     }
     
+    
+    /**
+     * Shows a dialog asking the user to edit the alarm provided to this method.
+     * Returns null if the user clicks cancel.
+     * 
+     * @param alarmToEdit The alarm that will be presented to the user to edit.
+     * @return The Alarm the user edited or null.
+     */
     public Alarm showAlarmDialog(Alarm alarmToEdit)
     {
         //Prepare the dialog then display it.
         alarmDialog.setAlarm(alarmToEdit);
-        int selection = alarmDialog.show();
         
         //If the user clicks cancel return null.
-        if(selection != JOptionPane.OK_OPTION)
-            return null;
-        
-        return alarmDialog.getAlarm();
+        return alarmDialog.show() ? alarmDialog.getAlarm() : null;
     }
     
     
     /**
-     * Show a dialog displaying the message provided with a yes and no option.
+     * Shows a dialog displaying the message provided with a yes and no option.
      * 
-     * @param message
-     * @return true if Yes option was selected.
+     * @param message The message to display to the user.
+     * @return True if Yes option was selected.
      */
     public boolean showYesNoDialog(String message)
     {
-        String ObjButtons[] = {"Yes","No"};
+        String buttons[] = {"Yes","No"};
         int result = JOptionPane.showOptionDialog(frame, message, "Clock",
             JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-            ObjButtons, ObjButtons[1]
+            buttons, buttons[1]
         );
         
         return result == JOptionPane.YES_OPTION;
     }
     
+    /**
+     * Shows a dialog asking the user to select a file path to save to.
+     * 
+     * @return The File object referencing the path selected by the user or null.
+     */
     public File showSaveFileDialog()
     {
         JFileChooser fileDialog = new JFileChooser();
-        fileDialog.setFileFilter(
-            new FileNameExtensionFilter(
-                "ICalendar File", "ical", "ics", "ifb", "icalendar"
-        ));
         
         //Return null if the user cancels the operation.
         if(fileDialog.showSaveDialog(frame)!= JFileChooser.APPROVE_OPTION)
@@ -312,13 +459,15 @@ public class View{
         
         return fileDialog.getSelectedFile();
     }
+    
+    /**
+     * Shows a dialog asking the user to select a file path to open from.
+     * 
+     * @return The File object referencing the path selected by the user or null.
+     */
     public File showOpenFileDialog()
     {
         JFileChooser fileDialog = new JFileChooser();
-        fileDialog.setFileFilter(
-            new FileNameExtensionFilter(
-                "ICalendar File", "ical", "ics", "ifb", "icalendar"
-        ));
         
         //Return null if the user cancels the operation.
         if(fileDialog.showOpenDialog(frame)!= JFileChooser.APPROVE_OPTION)
@@ -327,41 +476,71 @@ public class View{
         return fileDialog.getSelectedFile();
     }
     
+    /**
+     * Shows the user a popup box displaying the message provided.
+     * 
+     * @param message The message to show to the user.
+     */
     public void displayPopupBox(String message)
     {
         JOptionPane.showMessageDialog(frame, message);
     }
     
+    /**
+     * Get the index of the item selected by the user in the alarm editor list.
+     * 
+     * @return The index of the item selected by the user in the alarm editor list.
+     */
      public int getAlarmEditorSelectionIndex()
     {
         return alarmEditorList.getSelectedIndex();
     }
     
-    //No JavaDocs as the method does not currently do anything except flip the
-    //state of some booleans.
+    
+    /**
+     * Unimplemented.
+     */
     public void toggleDigitalAnalogue()
     {
         digitalClockDisplayed = !digitalClockDisplayed;
         clock24hMenuItem.setEnabled(digitalClockDisplayed);
     }
     
-    public void updateAlarmEditor(PriorityQueue q)
+    /**
+     * Clears the alarm editor list and repopulates it from the provided queue.
+     * 
+     * @param queue The queue to populate the alarm editor list with. 
+     */
+    public void updateAlarmEditor(PriorityQueue queue)
     {
         int preserveSelection = alarmEditorList.getSelectedIndex();
         
         listModel.clear();
-        for(int i = 0; i < q.getCount(); i++)
-            listModel.add(i, q.get(i).toString());
+        for(int i = 0; i < queue.getCount(); i++)
+            listModel.add(i, queue.get(i).toString());
         
         alarmEditorList.setSelectedIndex(preserveSelection);
     }
     
+    /**
+     * Updates the position of the alarm hand on the clock panel.
+     * 
+     * @param alarmHour The hour the alarm hand should indicate.
+     * @param alarmMinute The minute the alarm hand should indicate.
+     */
     public void updateAlarmHand(int alarmHour, int alarmMinute)
     {
         panel.setAlarmTime(alarmHour, alarmMinute);
         panel.repaint();
     }
-            
+    
+    /**
+     * Updates the time displayed by the clock panel.
+     * 
+     * @param hour The hour the clock should indicate.
+     * @param minute The minute the clock should indicate.
+     * @param second The second the clock should indicate.
+     */
     public void updateTime(int hour, int minute, int second)
     {
         panel.setTime(hour, minute, second);

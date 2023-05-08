@@ -6,15 +6,41 @@ import java.awt.font.*;
 import static java.lang.Float.max;
 import javax.swing.*;
 
+/**
+ * The class that draws the clock.
+ * 
+ * @author Calum Lindsay
+ */
 public class ClockPanel extends JPanel {
     
-    int hour;
-    int minute;
-    int second;
+    /**
+     * The hour that the clock displays.
+     */
+    private int hour;
     
-    int alarmHour;
-    int alarmMinute;
+    /**
+     * The minute that the clock displays.
+     */
+    private int minute;
     
+    /**
+     * The second that the clock displays.
+     */
+    private int second;
+    
+    /**
+     * The alarm hour that the clock displays.
+     */
+    private int alarmHour;
+    
+    /**
+     * The alarm minute that the clock displays.
+     */
+    private int alarmMinute;
+    
+    /**
+     * Creates a new ClockPanel instance.
+     */
     public ClockPanel() 
     {
         setPreferredSize(new Dimension(200, 200));
@@ -22,6 +48,13 @@ public class ClockPanel extends JPanel {
         alarmHour = -1;
     }
     
+    /**
+     * Sets the time to display on the clock the next time it is drawn.
+     * 
+     * @param hour The hour to display on the clock.
+     * @param minute The minute to display on the clock.
+     * @param second The second to display on the clock.
+     */
     public void setTime(int hour, int minute, int second)
     {
         this.hour = hour;
@@ -29,12 +62,23 @@ public class ClockPanel extends JPanel {
         this.second = second;
     }
     
+    /**
+     * Sets the alarm time to display on the clock the next time it is drawn.
+     * 
+     * @param alarmHour The alarm hour to display on the clock.
+     * @param alarmMinute  The alarm minute to display on the clock.
+     */
     public void setAlarmTime(int alarmHour, int alarmMinute)
     {
         this.alarmHour = alarmHour;
         this.alarmMinute = alarmMinute;
     }
     
+    /**
+     * Draws the clock.
+     * 
+     * @param g the graphics context to use.
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

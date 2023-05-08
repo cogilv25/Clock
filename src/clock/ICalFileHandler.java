@@ -1,31 +1,42 @@
 package clock;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
- * @author Calum
+ * Loads an iCalendar file from file into a PriorityQueue or saves a 
+ * PriorityQueue to a file using the iCalendar format. Only implements a subset
+ * of the iCalendar format and thus only guarantees to read files that it has
+ * written.
+ * 
+ * @author Calum Lindsay
  */
 class ICalFileHandler {
-    private File file;
+    
+    /**
+     * The active activeFile that will be saved to or loaded from.
+     */
+    private File activeFile;
     
     
+    /**
+     * Saves the PriorityQueue provided to the active file in the iCalendar 
+     * format.
+     * 
+     * @param queue The PriorityQueue to save.
+     * @return True if the save operation completed successfully.
+     */
     boolean saveAlarmQueue(PriorityQueue queue)
     {
-        if(file == null)
+        if(activeFile == null)
             return false;
         try
         {
-            FileWriter writer = new FileWriter(file.toString());
+            FileWriter writer = new FileWriter(activeFile.toString());
             writer.write("BEGIN:VCALENDAR\r\n");
             writer.write("VERSION:2.0\r\n");
             writer.write("PRODID:-//cll-ass2//NONSGML clock v1.0//EN");
@@ -61,18 +72,23 @@ class ICalFileHandler {
         return true;
     }
     
+    /**
+     * Loads a PriorityQueue from the active file.
+     * 
+     * @return The PriorityQueue loaded or null if the operation failed.
+     */
     PriorityQueue loadAlarmQueue()
     {
-        if(file == null)
-            throw new IllegalArgumentException();
+        if(activeFile == null)
+            return null;
         
-        if(!file.exists())
-            throw new IllegalArgumentException();
+        if(!activeFile.exists())
+            return null;
         
         List<String> buffer;
         
         try{
-            buffer = Files.readAllLines(file.toPath());
+            buffer = Files.readAllLines(activeFile.toPath());
         }
         catch(IOException e)
         {
@@ -129,13 +145,23 @@ class ICalFileHandler {
         return q;
     }
     
+    /**
+     * Get the current active file.
+     * 
+     * @return The current active file.
+     */
     File getFile()
     {
-        return file;
+        return activeFile;
     }
     
+    /**
+     * Sets the active file.
+     * 
+     * @param file The new active file.
+     */
     void setFile(File file)
     {
-        this.file = file;
+        this.activeFile = file;
     }
 }

@@ -4,23 +4,45 @@ import java.awt.event.*;
 import java.io.File;
 import javax.swing.Timer;
 
-/* Essentially the MVC architecture boils down to Controller (this class)
- * receives input through the actionPerformed class, then it calls functions in
- * Model and passes the return values to View for example:
- * 
- * view.showThing(model.doThing());                                           */
 
+/**
+ * The Controller part of the MVC architecture. Receives input through the
+ * actionPerformed method, then calls functions in it's Model and View instances
+ * passing variables back and forward between the two.
+ * 
+ * @author Calum Lindsay
+ */
 public class Controller extends WindowAdapter implements ActionListener {
-    Timer timer;
     
-    Model model;
-    View view;
+    /**
+     * A Timer that 'ticks' every 0.1s. 
+     */
+    private Timer timer;
     
+    /**
+     * The Model instance.
+     */
+    private final Model model;
+    
+    /** 
+     * The View instance.
+     */
+    private final View view;
+    
+    /**
+     * Creates a new Controller to control the provided Model and View.
+     * 
+     * @param m The Model for the Controller to use.
+     * @param v The View for the Controller to use.
+     */
     public Controller(Model m, View v) {
         model = m;
         view = v;
     }
     
+    /**
+     * Starts the timer and initializes the Model and View.
+     */
     public void begin()
     {
         view.initializeCallbacks(this);
@@ -42,9 +64,14 @@ public class Controller extends WindowAdapter implements ActionListener {
             view.displayPopupBox("Failed to open the file provided! Please try "
                     + "again or select another file");
         
-        view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+        view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
     }
 
+    /**
+     * Asks the user if they wish to save before closing the window.
+     * 
+     * @param e The WindowEvent.
+     */
     @Override
     public void windowClosing(WindowEvent e)
     { 
@@ -52,7 +79,9 @@ public class Controller extends WindowAdapter implements ActionListener {
         if(model.isQueueEmpty())
             System.exit(0);
         
-        boolean shouldSave = view.showYesNoDialog("Would you like to save before exiting?");
+        boolean shouldSave = 
+            view.showYesNoDialog("Would you like to save before exiting?");
+        
         if(!shouldSave)
             System.exit(0);
         
@@ -67,25 +96,26 @@ public class Controller extends WindowAdapter implements ActionListener {
             model.setActiveFile(file);
         }
         //Now that we have a file the user wishes to save we loop until we
-        // manage to save a file or the user cancels the operation. This is
-        // due to the fact that fileio fails fairly regularly.
+        // manage to save a file or the user cancels the operation.
 
-        while(file!=null)
+        while(file != null)
         {
-            if(!model.saveStateToActiveFile())
-            {
-                view.displayPopupBox("Failed to save the file, please choose another filename");
-                file = view.showSaveFileDialog();
-            }
-            else
-            {
+            if(model.saveStateToActiveFile())
                 break;
-            }
+            
+            view.displayPopupBox("Failed to save the file, please choose another filename");
+            file = view.showSaveFileDialog();
         }
         
         System.exit(0);
     }
     
+    /**
+     * Processes events received from the UI and Timer and calls functions from
+     * the Model and View instances to achieve the desired results.
+     * 
+     * @param e 
+     */
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -98,17 +128,19 @@ public class Controller extends WindowAdapter implements ActionListener {
                 model.update();
                 if(model.timeUpdated())
                 {
-                    view.updateTime(model.hour, model.minute, model.second);
+                    view.updateTime(model.getCurrentHour(),
+                        model.getCurrentMinute(), model.getCurrentSecond());
                 }
-                if(model.qUpdated)
+                if(model.getQueueUpdated())
                 {
-                    view.updateAlarmEditor(model.q);
+                    view.updateAlarmEditor(model.getQueue());
+                    model.resetQueueUpdatedFlag();
                 }
-                if(model.activatedAlarm != null)
+                if(model.getActivatedAlarm() != null)
                 {
-                    view.displayPopupBox(model.activatedAlarm.getMessage());
+                    view.displayPopupBox(model.getActivatedAlarm().getMessage());
                     model.stopActivatedAlarm();
-                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                    view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
                 }
                 break;
                 
@@ -122,7 +154,7 @@ public class Controller extends WindowAdapter implements ActionListener {
                 model.setActiveFile(null);
             case "Reset All Alarms":
                 model.resetQueue();
-                view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
                 break;
                 
             case "Add":
@@ -131,7 +163,7 @@ public class Controller extends WindowAdapter implements ActionListener {
                 if(alarm != null)
                 {
                     model.addAlarm(alarm.getAlarmTime(), alarm.getMessage());
-                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                    view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
                 }
                 break;
                 
@@ -144,8 +176,8 @@ public class Controller extends WindowAdapter implements ActionListener {
                     catch(Exception throwaway){}
                     
                     model.addAlarm(newAlarm.getAlarmTime(), newAlarm.getMessage());
-                    view.updateAlarmEditor(model.q);
-                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                    view.updateAlarmEditor(model.getQueue());
+                    view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
                 }
                 break;
                 
@@ -157,7 +189,7 @@ public class Controller extends WindowAdapter implements ActionListener {
                 try { model.removeAlarm(indexToRemove); }
                 catch(QueueUnderflowException throwaway){ break; }
                 
-                view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
                 break;
                 
             case "Open":
@@ -170,7 +202,7 @@ public class Controller extends WindowAdapter implements ActionListener {
                 if(!model.loadStateFromActiveFile())
                     view.displayPopupBox("Failed to load file!");
                 else
-                    view.updateAlarmHand(model.alarmHour, model.alarmMinute);
+                    view.updateAlarmHand(model.getAlarmHour(), model.getAlarmMinute());
                 break;
                 
             case "Save as...":

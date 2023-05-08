@@ -2,35 +2,53 @@ package clock;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import javax.swing.*;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
-
+/**
+ * Constructs and displays the Add/Edit Alarm dialog.
+ * 
+ * @author Calum Lindsay
+ */
 public class AlarmDialog
 {
-    private List<JComponent> components;
+    /**
+     * The Panel upon which the other components are placed.
+     */
+    private final JPanel panel;
     
-    private JTextField alarmMessage;
-    private SpinnerModel hourSpinnerModel;
-    private SpinnerModel minuteSpinnerModel;
-    private SpinnerModel secondSpinnerModel;
+    /**
+     * The text box that holds the message of the Alarm being created.
+     */
+    private final JTextField alarmMessage;
     
-    private JRootPane parent;
-    private String[] options;
+    /**
+     * The JSpinner that holds the expiry hour of the Alarm being created.
+     */
+    private final SpinnerModel hourSpinnerModel;
+    
+    /**
+     * The JSpinner that holds the expiry minute of the Alarm being created.
+     */
+    private final SpinnerModel minuteSpinnerModel;
+    
+    /**
+     * The JSpinner that holds the expiry second of the Alarm being created.
+     */
+    private final SpinnerModel secondSpinnerModel;
+    
+    /**
+     * 
+     */
+    private final String[] options;
 
+    /**
+     * Create a new AlarmDialog instance.
+     */
     public AlarmDialog()
     {
-        components = new ArrayList<>();
+        //Initialize controls.
+        panel = new JPanel(new GridBagLayout());
         alarmMessage = new JTextField();
 
         Calendar now = Calendar.getInstance();
@@ -48,8 +66,8 @@ public class AlarmDialog
             0, 59, 1);
         
         options = new String[] { "Confirm", "Cancel" };
-        JPanel panel = new JPanel(new GridBagLayout());
-        components.add(panel);
+        
+        //Layout code starts here
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1.0;
         gbc.weighty = .25;
@@ -57,9 +75,13 @@ public class AlarmDialog
         gbc.gridy = 0;
         gbc.gridwidth = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        //Message label and textbox.
         panel.add(new JLabel("Message:"),gbc);
         gbc.gridy = 1;
         panel.add(alarmMessage, gbc);
+        
+        //Labels for JSpinners.
         gbc.gridy = 2;
         gbc.gridwidth = 1;
         panel.add(new JLabel("Hours"),gbc);
@@ -67,6 +89,8 @@ public class AlarmDialog
         panel.add(new JLabel("Minutes"),gbc);
         gbc.gridx = 2;
         panel.add(new JLabel("Seconds"),gbc);
+        
+        //JSpinners.
         gbc.gridy = 3;
         gbc.gridx = 0;
         panel.add(new JSpinner(hourSpinnerModel),gbc);
@@ -75,9 +99,14 @@ public class AlarmDialog
         gbc.gridx = 2;
         panel.add(new JSpinner(secondSpinnerModel),gbc);
         
-        
     }
     
+    
+    /**
+     * Set the Alarm stored by the dialog to the one provided.
+     * 
+     * @param alarm The Alarm to be stored in the dialog.
+     */
     public void setAlarm(Alarm alarm)
     {
         alarmMessage.setText(alarm.getMessage());
@@ -86,6 +115,11 @@ public class AlarmDialog
         secondSpinnerModel.setValue(alarm.getAlarmTime().get(Calendar.SECOND));
     }
     
+    /**
+     * Get the Alarm stored by the dialog.
+     * 
+     * @return The Alarm stored by the dialog.
+     */
     public Alarm getAlarm()
     {
         Calendar alarmTime = Calendar.getInstance();
@@ -101,20 +135,19 @@ public class AlarmDialog
         return new Alarm(alarmMessage.getText(), alarmTime);
     }
 
-    public void setParent(JRootPane rootPane)
-    {
-        this.parent = rootPane;
-    }
-
-    public int show()
+    /**
+     * Shows the dialog to the user.
+     * 
+     * @return True unless the user hits cancel.
+     */
+    public boolean show()
     {
         int optionType = JOptionPane.OK_CANCEL_OPTION;
-        Object optionSelection = options[0];
 
-        int selection = JOptionPane.showOptionDialog(parent,
-            components.toArray(), "Add or Edit an Alarm", optionType,
-            JOptionPane.PLAIN_MESSAGE, null, options, optionSelection);
+        int selection = JOptionPane.showOptionDialog(null,
+            panel, "Add or Edit an Alarm", optionType,
+            JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
-        return selection;
+        return selection == JOptionPane.OK_OPTION;
     }
 }
