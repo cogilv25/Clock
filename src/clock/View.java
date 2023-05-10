@@ -34,8 +34,38 @@ public class View{
      */
     private DefaultListModel listModel;
     
-    //Menu bar menus and items
-    //Indentation is used to indicate submenu items
+    /**
+     * Flag that indicates if the alarm editor is visible.
+     */
+    private boolean alarmEditorVisible = false;
+    
+    /**
+     * The minimum width of the window when the alarm editor is visible.
+     */
+    private int minWidth;
+    
+    /**
+     * The minimum width of the window when the alarm editor is not visible.
+     */
+    private int minWidthNoAlarmEditor;
+    
+    /**
+     * The minimum height of the window.
+     */
+    private int minHeight;
+    
+    /**
+     * Unimplemented.
+     */
+    private boolean digitalClockDisplayed = false;
+    
+    /**
+     * Unimplemented.
+     */
+    private boolean twentyFourHourMode = false;
+    
+    /* --------------------- Menu bar menus and items ----------------------- */
+    /* ------------ Indentation is used to indicate submenu items ----------- */
     
     /**
      * The file menu on the menu bar.
@@ -149,37 +179,6 @@ public class View{
          */
         private JButton removeButton;
     
-    // Internal
-    
-    /**
-     * Flag that indicates if the alarm editor is visible.
-     */
-    private boolean alarmEditorVisible = false;
-    
-    /**
-     * The minimum width of the window when the alarm editor is visible.
-     */
-    private int minWidth;
-    
-    /**
-     * The minimum width of the window when the alarm editor is not visible.
-     */
-    private int minWidthNoAlarmEditor;
-    
-    /**
-     * The minimum height of the window.
-     */
-    private int minHeight;
-    
-    /**
-     * Unimplemented.
-     */
-    private boolean digitalClockDisplayed = false;
-    
-    /**
-     * Unimplemented.
-     */
-    private boolean twentyFourHourMode = false;
     
     /**
      * Create a new View.
